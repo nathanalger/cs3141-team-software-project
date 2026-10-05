@@ -49,7 +49,25 @@ deno install --global -A npm:pnpm
 
 ## 3. Clone Repository
 
-...
+You must have git bash installed. Most linux distros come with this by default, and MacOS makes it easy to install with `brew`. You can download it for Windows [here](https://git-scm.com/install/windows). 
+
+To get Git SSH to work with your GitHub account, you must make an [SSH key and add it to your github account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account). Then, set up your Name and Email for your commits with the following commands:
+
+```bash
+git config --global user.name "Your Name"
+git config --global user.email "your.email@example.com"
+```
+
+*(Replace "Your Name" and "your.email@example.com" with your actual name and email respectively)*
+
+Navigate to a directory where you would like the source code downloaded to and run 
+
+```sh
+git clone git@github.com:nathanalger/cs3141-team-software-project.git
+cd cs3141-team-software-project
+```
+
+If this succeeds, you will download and navigate into the source folder.
 
 ## 4. Install Modules
 
