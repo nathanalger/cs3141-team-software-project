@@ -76,3 +76,18 @@ In the root folder, `cs3141-team-software-project`, open a terminal session and 
 ```sh
 pnpm install
 ```
+
+## 5. Install VSCode & Extensions
+
+I would strongly recommend using VSCode as your primary IDE for this. I have setup some settings to make development a bit faster and cleaner, meant to work specifically in VSCode.
+
+VSCode 
+https://code.visualstudio.com/download
+
+### Extensions
+
+ESLint
+https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
+
+Prettier
+https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
