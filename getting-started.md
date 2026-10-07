@@ -17,6 +17,7 @@ If you haven't used React much, this roadmap will help:
 ## 1. Installing Deno
 
 ### Linux + MacOS
+
 Open a terminal on Linux/macOS:
 
 ```sh
@@ -49,7 +50,7 @@ deno install --global -A npm:pnpm
 
 ## 3. Clone Repository
 
-You must have git bash installed. Most linux distros come with this by default, and MacOS makes it easy to install with `brew`. You can download it for Windows [here](https://git-scm.com/install/windows). 
+You must have git bash installed. Most linux distros come with this by default, and MacOS makes it easy to install with `brew`. You can download it for Windows [here](https://git-scm.com/install/windows).
 
 To get Git SSH to work with your GitHub account, you must make an [SSH key and add it to your github account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account). Then, set up your Name and Email for your commits with the following commands:
 
@@ -58,9 +59,9 @@ git config --global user.name "Your Name"
 git config --global user.email "your.email@example.com"
 ```
 
-*(Replace "Your Name" and "your.email@example.com" with your actual name and email respectively)*
+_(Replace "Your Name" and "your.email@example.com" with your actual name and email respectively)_
 
-Navigate to a directory where you would like the source code downloaded to and run 
+Navigate to a directory where you would like the source code downloaded to and run
 
 ```sh
 git clone git@github.com:nathanalger/cs3141-team-software-project.git
@@ -81,8 +82,18 @@ pnpm install
 
 I would strongly recommend using VSCode as your primary IDE for this. I have setup some settings to make development a bit faster and cleaner, meant to work specifically in VSCode.
 
-VSCode 
+VSCode
 https://code.visualstudio.com/download
+
+## 6. Start Local Vite Server
+
+Finally, to start the local vite server, open the root folder (`cs3141-team-software-project`) in your terminal and run the following command:
+
+```sh
+pnpm lf
+```
+
+This will launch a vite server instance on https://localhost:5173/.
 
 ### Extensions
 
