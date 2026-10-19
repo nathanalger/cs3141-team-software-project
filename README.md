@@ -4,7 +4,7 @@ A project for MTU-CS3141 Team Software Project. The application is a frontend cl
 
 ## Getting Started
 
-See [Getting Started](./getting-started.md).
+Open [Getting Started](./getting-started.md).
 
 ## Start Local Vite Server
 
