@@ -95,3 +95,17 @@ https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint
 
 Prettier
 https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode
+
+## Run Frontend Tests
+
+Run the frontend test suite once:
+
+```sh
+pnpm test
+```
+
+To rerun tests automatically as files change:
+
+```sh
+pnpm test:watch
+```
