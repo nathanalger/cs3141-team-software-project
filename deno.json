@@ -4,22 +4,15 @@
       "install": "deno install",
       "electron:install": "node ./node_modules/.deno/electron@44.9.0/node_modules/electron/install.js",
       "dev": {
-         "description": "Install dependencies, install Electron runtime, and start the API and desktop app",
+         "description": "Install dependencies, install Electron runtime, and start the desktop app",
          "dependencies": ["install", "electron:install"],
-         "command": "deno task server & deno task client"
+         "command": "electron-vite dev"
       },
-      "server": "deno run --watch -A server/main.ts",
-      "client": "electron-vite dev",
       "build": "electron-vite build",
       "preview": "electron-vite preview",
       "package": "deno task build && electron-builder",
       "test": "vitest run",
       "test:watch": "vitest"
-   },
-   "imports": {
-      "hono": "jsr:@hono/hono@^4",
-      "imapflow": "npm:imapflow@^1",
-      "nodemailer": "npm:nodemailer@^6"
    },
    "allowScripts": ["npm:electron", "npm:electron-winstaller"]
 }
