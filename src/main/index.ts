@@ -1,12 +1,19 @@
 import { app, BrowserWindow, Menu } from 'electron'
 import { join } from 'node:path'
+import * as config from '../config'
 
 function createWindow() {
+   const iconPath = app.isPackaged
+      ? join(process.resourcesPath, 'desktop_assets', 'icon.ico')
+      : join(__dirname, '../../src/main/desktop_assets/icon.ico')
+
    const win = new BrowserWindow({
       width: 1200,
       height: 800,
       minWidth: 800,
       minHeight: 600,
+      title: config.APP_WINDOW_NAME,
+      icon: iconPath,
       webPreferences: {
          preload: join(__dirname, '../preload/index.cjs'),
          contextIsolation: true,

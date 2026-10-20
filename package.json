@@ -1,6 +1,6 @@
 {
    "main": "out/main/index.js",
-   "name": "my-react-app",
+   "name": "Email Client",
    "private": true,
    "version": "0.0.0",
    "type": "module",
@@ -46,7 +46,14 @@
          "out/**/*",
          "package.json"
       ],
+      "extraResources": [
+         {
+            "from": "src/main/desktop_assets",
+            "to": "desktop_assets"
+         }
+      ],
       "win": {
+         "icon": "src/main/desktop_assets/icon.ico",
          "target": "nsis"
       },
       "mac": {
