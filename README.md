@@ -6,15 +6,6 @@ A project for MTU-CS3141 Team Software Project. The application is a frontend cl
 
 Open [Getting Started](./getting-started.md).
 
-## Install Deno
-
-### Windows
-
-```powershell
-irm https://deno.land/install.ps1 | iex
-```
-
-
 ## Start Local Servers
 
 In the root folder (`cs3141-team-software-project`), run:
@@ -23,7 +14,8 @@ In the root folder (`cs3141-team-software-project`), run:
 deno task dev
 ```
 
-Frontend: http://localhost:5173/
+This will launch the frontend server alongside an electron instance.
+
 Backend: http://localhost:8000/
 
 ## Appendix
