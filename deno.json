@@ -2,9 +2,10 @@
    "nodeModulesDir": "auto",
    "tasks": {
       "install": "deno install",
+      "electron:install": "node ./node_modules/.deno/electron@44.9.0/node_modules/electron/install.js",
       "dev": {
-         "description": "Install dependencies and start the API and Electron desktop app",
-         "dependencies": ["install"],
+         "description": "Install dependencies, install Electron runtime, and start the API and desktop app",
+         "dependencies": ["install", "electron:install"],
          "command": "deno task server & deno task client"
       },
       "server": "deno run --watch -A server/main.ts",
