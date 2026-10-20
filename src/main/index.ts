@@ -2,6 +2,18 @@ import { app, BrowserWindow, Menu } from 'electron'
 import { join } from 'node:path'
 import * as config from '../config'
 
+app.on('render-process-gone', (_event, _webContents, details) => {
+   console.error('[main] Renderer process gone:', details)
+})
+
+process.on('uncaughtException', (error) => {
+   console.error('[main] Uncaught exception:', error)
+})
+
+process.on('unhandledRejection', (reason) => {
+   console.error('[main] Unhandled rejection:', reason)
+})
+
 function createWindow() {
    const iconPath = app.isPackaged
       ? join(process.resourcesPath, 'desktop_assets', 'icon.ico')
@@ -14,6 +26,7 @@ function createWindow() {
       minHeight: 600,
       title: config.APP_WINDOW_NAME,
       icon: iconPath,
+      show: true,
       webPreferences: {
          preload: join(__dirname, '../preload/index.cjs'),
          contextIsolation: true,
@@ -21,24 +34,43 @@ function createWindow() {
       },
    })
 
+   win.webContents.on('did-fail-load', (_event, code, description, url) => {
+      console.error('[main] Failed to load:', { code, description, url })
+   })
+
+   win.on('ready-to-show', () => {
+      win.show()
+   })
+
    Menu.setApplicationMenu(null)
 
-   if (process.env.ELECTRON_RENDERER_URL) {
-      void win.loadURL(process.env.ELECTRON_RENDERER_URL)
+   const rendererUrl = process.env.ELECTRON_RENDERER_URL
+
+   if (rendererUrl) {
+      void win.loadURL(rendererUrl).catch((error) => {
+         console.error('[main] loadURL failed:', error)
+      })
    } else {
-      void win.loadFile(join(__dirname, '../renderer/index.html'))
+      const htmlPath = join(__dirname, '../renderer/index.html')
+      void win.loadFile(htmlPath).catch((error) => {
+         console.error('[main] loadFile failed:', error)
+      })
    }
 }
 
-app.whenReady().then(() => {
-   createWindow()
+app.whenReady()
+   .then(() => {
+      createWindow()
 
-   app.on('activate', () => {
-      if (BrowserWindow.getAllWindows().length === 0) {
-         createWindow()
-      }
+      app.on('activate', () => {
+         if (BrowserWindow.getAllWindows().length === 0) {
+            createWindow()
+         }
+      })
    })
-})
+   .catch((error) => {
+      console.error('[main] App initialization failed:', error)
+   })
 
 app.on('window-all-closed', () => {
    if (process.platform !== 'darwin') {
