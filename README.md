@@ -6,15 +6,25 @@ A project for MTU-CS3141 Team Software Project. The application is a frontend cl
 
 Open [Getting Started](./getting-started.md).
 
-## Start Local Vite Server
+## Install Deno
 
-Finally, to start the local vite server, open the root folder (`cs3141-team-software-project`) in your terminal and run the following command:
+### Windows
 
-```sh
-pnpm lf
+```powershell
+irm https://deno.land/install.ps1 | iex
 ```
 
-This will launch a vite server instance on https://localhost:5173/.
+
+## Start Local Servers
+
+In the root folder (`cs3141-team-software-project`), run:
+
+```sh
+deno task dev
+```
+
+Frontend: http://localhost:5173/
+Backend: http://localhost:8000/
 
 ## Appendix
 

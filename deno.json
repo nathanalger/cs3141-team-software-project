@@ -1,0 +1,19 @@
+{
+   "nodeModulesDir": "auto",
+   "tasks": {
+      "dev": {
+         "description": "Install dependencies, then start the Deno API (port 8000) and the Vite frontend (port 5173)",
+         "command": "deno task server & deno task client",
+         "dependencies": ["install"]
+      },
+      "install": "deno install",
+      "server": "deno run --watch -A server/main.ts",
+      "client": "deno run -A npm:vite",
+      "build": "deno run -A npm:vite build"
+   },
+   "imports": {
+      "hono": "jsr:@hono/hono@^4",
+      "imapflow": "npm:imapflow@^1",
+      "nodemailer": "npm:nodemailer@^6"
+   }
+}

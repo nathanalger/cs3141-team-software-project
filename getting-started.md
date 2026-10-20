@@ -40,15 +40,7 @@ This downloads an install script and executes it.
 
 Now, restart your terminal session for changes to take effect.
 
-## 2. Install pnpm Package Manager
-
-This project uses pnpm, which is a package manager very similar to npm, but it does a better job at optimizing packages.
-
-```sh
-deno install --global -A npm:pnpm
-```
-
-## 3. Clone Repository
+## 2. Clone Repository
 
 You must have git bash installed. Most linux distros come with this by default, and MacOS makes it easy to install with `brew`. You can download it for Windows [here](https://git-scm.com/install/windows).
 
@@ -70,30 +62,31 @@ cd cs3141-team-software-project
 
 If this succeeds, you will download and navigate into the source folder.
 
-## 4. Install Modules
+## 3. Install Modules
 
 In the root folder, `cs3141-team-software-project`, open a terminal session and run:
 
 ```sh
-pnpm install
+deno install
 ```
 
-## 5. Install VSCode & Extensions
+## 4. Install VSCode & Extensions
 
 I would strongly recommend using VSCode as your primary IDE for this. I have setup some settings to make development a bit faster and cleaner, meant to work specifically in VSCode.
 
 VSCode
 https://code.visualstudio.com/download
 
-## 6. Start Local Vite Server
+## 5. Start Local Servers
 
-Finally, to start the local vite server, open the root folder (`cs3141-team-software-project`) in your terminal and run the following command:
+In the root folder (`cs3141-team-software-project`), run:
 
 ```sh
-pnpm lf
+deno task dev
 ```
 
-This will launch a vite server instance on https://localhost:5173/.
+Frontend: http://localhost:5173/
+Backend: http://localhost:8000/
 
 ### Extensions
 
