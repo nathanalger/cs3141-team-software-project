@@ -20,12 +20,15 @@ export default defineConfig({
       },
    },
    renderer: {
-      root: resolve(__dirname, 'src/renderer'),
+      root: resolve(import.meta.dirname, 'src/renderer'),
       plugins: [react()],
       resolve: {
-         alias: {
-            '@': resolve(__dirname, 'src/renderer/src'),
-         },
+         dedupe: ['react', 'react-dom'],
+         alias: [
+            { find: /^react$/, replacement: resolve(import.meta.dirname, 'node_modules/react/index.js') },
+            { find: /^react-dom$/, replacement: resolve(import.meta.dirname, 'node_modules/react-dom/index.js') },
+            { find: '@', replacement: resolve(import.meta.dirname, 'src/renderer/src') },
+         ],
       },
    },
 })
