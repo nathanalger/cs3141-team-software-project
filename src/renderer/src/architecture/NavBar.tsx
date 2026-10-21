@@ -5,9 +5,11 @@ import Settings from '@mui/icons-material/Settings';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
-   { slug: '/', label: 'Inbox', icon: <Inbox /> },
+   { slug: '/inbox', label: 'Inbox', icon: <Inbox /> },
    { slug: '/settings', label: 'Settings', icon: <Settings /> },
 ];
+
+const isSlugActive = (pathname: string, slug: string) => pathname === slug || pathname.startsWith(`${slug}/`);
 
 const NavBar = () => {
    const location = useLocation();
@@ -29,10 +31,10 @@ const NavBar = () => {
                key={slug}
                icon={icon}
                onClick={() => navigate(slug)}
-               color={location.pathname === slug ? 'primary' : 'neutral'}
+               color={isSlugActive(location.pathname, slug) ? 'primary' : 'neutral'}
                sx={{
                   bgcolor: (t) =>
-                     location.pathname === slug
+                     isSlugActive(location.pathname, slug)
                         ? `color-mix(in srgb, ${t.palette.primary[500]} 20%, transparent)`
                         : undefined,
                   WebkitAppRegion: 'no-drag',

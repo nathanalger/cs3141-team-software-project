@@ -7,8 +7,9 @@ import type { SxProps } from '@mui/joy/styles/types';
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import NavBar from './NavBar';
+import FunctionBar from './FunctionBar';
 
-const NAV_THICKNESS = 60;
+export const NAV_THICKNESS = 60;
 
 const MainWrapperSx = {
    p: 2,
@@ -144,12 +145,9 @@ const MainWrapper = () => {
                height: '100%',
             }}
          >
-            <Box
-               sx={{
-                  width: NAV_THICKNESS,
-               }}
-            ></Box>
-            <Box sx={MainWrapperSx}>
+            {/* Left Bar */}
+            <FunctionBar />
+            <Box sx={{ ...MainWrapperSx, minWidth: 0 }}>
                <Outlet />
             </Box>
          </Box>
