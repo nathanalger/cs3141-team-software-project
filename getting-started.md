@@ -14,7 +14,7 @@ If you haven't used React much, this roadmap will help:
 
 [https://roadmap.sh/react](https://roadmap.sh/react)
 
-## 1. Installing Deno
+## 1. Installing Deno, Node.js, and pnpm
 
 ### Linux + MacOS
 
@@ -30,6 +30,12 @@ This will make a temp direcory if it doesnt exist, download the install script, 
 
 Now, restart your terminal session for changes to take effect.
 
+Install the latest Node.js LTS release from [nodejs.org](https://nodejs.org/en/download). Then install pnpm:
+
+```sh
+npm install --global pnpm
+```
+
 ### Windows
 
 ```powershell
@@ -39,6 +45,19 @@ irm https://deno.land/install.ps1 | iex
 This downloads an install script and executes it.
 
 Now, restart your terminal session for changes to take effect.
+
+Install the latest Node.js LTS release from [nodejs.org](https://nodejs.org/en/download), then open a new terminal and install pnpm:
+
+```powershell
+npm install --global pnpm
+```
+
+Verify that Node.js and pnpm are available:
+
+```sh
+node --version
+pnpm --version
+```
 
 ## 2. Clone Repository
 
