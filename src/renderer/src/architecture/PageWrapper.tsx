@@ -4,7 +4,7 @@ import type { ReactNode } from 'react';
 
 const PageWrapperSx = {} as SxProps;
 
-const PageWrapper = ({ children }: { children: ReactNode }) => {
+const PageWrapper = ({ children }: { children?: ReactNode }) => {
    return <Box sx={PageWrapperSx}>{children}</Box>;
 };
 

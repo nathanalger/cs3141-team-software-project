@@ -21,6 +21,7 @@ export default defineConfig({
    },
    renderer: {
       root: resolve(import.meta.dirname, 'src/renderer'),
+      publicDir: resolve(import.meta.dirname, 'src/renderer/src/public'),
       plugins: [react()],
       resolve: {
          dedupe: ['react', 'react-dom'],
