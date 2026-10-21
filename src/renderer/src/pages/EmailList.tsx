@@ -1,6 +1,6 @@
 import { Card, Typography } from '@mui/joy';
 
-const Home = () => {
+const EmailList = () => {
    return (
       <Card>
          <Typography>Hello!</Typography>
@@ -8,4 +8,4 @@ const Home = () => {
    );
 };
 
-export default Home;
+export default EmailList;
