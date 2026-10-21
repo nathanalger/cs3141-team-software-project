@@ -1,5 +1,10 @@
-import { Box, useColorScheme } from '@mui/joy';
+import { Box, IconButton, useColorScheme } from '@mui/joy';
+import Close from '@mui/icons-material/Close';
+import CropSquare from '@mui/icons-material/CropSquare';
+import FilterNone from '@mui/icons-material/FilterNone';
+import Minimize from '@mui/icons-material/Minimize';
 import type { SxProps } from '@mui/joy/styles/types';
+import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import NavBar from './NavBar';
 
@@ -21,6 +26,15 @@ const MainWrapperSx = {
 const MainWrapper = () => {
    const { mode, systemMode } = useColorScheme();
    const currentMode = mode === 'system' ? systemMode : mode;
+   const [isMaximized, setIsMaximized] = useState(false);
+
+   useEffect(() => {
+      const desktop = window.desktop;
+      if (!desktop) return;
+
+      void desktop.isMaximized().then(setIsMaximized);
+      return desktop.onMaximizeChange(setIsMaximized);
+   }, []);
 
    return (
       <Box
@@ -30,12 +44,13 @@ const MainWrapper = () => {
             height: '100vh',
          }}
       >
-         {/* Top Nav Bar */}
+         {/* Top Nav Bar, could theoretically be top bar */}
          <Box
             sx={{
                bgcolor: (t) => t.palette.background.surface,
                display: 'flex',
                height: NAV_THICKNESS,
+               WebkitAppRegion: 'drag',
             }}
          >
             {/* Top Left Logo (TEMP) */}
@@ -83,6 +98,42 @@ const MainWrapper = () => {
                }}
             >
                <NavBar />
+            </Box>
+            <Box
+               sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  WebkitAppRegion: 'no-drag',
+                  gap: 1,
+                  mr: 2,
+               }}
+            >
+               <IconButton
+                  size="sm"
+                  aria-label="Minimize window"
+                  variant="plain"
+                  onClick={() => void window.desktop?.minimize()}
+               >
+                  <Minimize />
+               </IconButton>
+               <IconButton
+                  size="sm"
+                  aria-label={isMaximized ? 'Restore window' : 'Maximize window'}
+                  variant="plain"
+                  onClick={() => {
+                     void window.desktop?.toggleMaximize().then(setIsMaximized);
+                  }}
+               >
+                  {isMaximized ? <FilterNone /> : <CropSquare />}
+               </IconButton>
+               <IconButton
+                  size="sm"
+                  aria-label="Close window"
+                  variant="plain"
+                  onClick={() => void window.desktop?.close()}
+               >
+                  <Close />
+               </IconButton>
             </Box>
          </Box>
          <Box

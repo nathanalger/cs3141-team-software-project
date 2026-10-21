@@ -1,4 +1,4 @@
-import { app, BrowserWindow, Menu } from 'electron'
+import { app, BrowserWindow, ipcMain, Menu, type IpcMainInvokeEvent } from 'electron'
 import { join } from 'node:path'
 import * as config from '../config'
 
@@ -14,6 +14,36 @@ process.on('unhandledRejection', (reason) => {
    console.error('[main] Unhandled rejection:', reason)
 })
 
+function getWindowFromEvent(event: IpcMainInvokeEvent) {
+   const win = BrowserWindow.fromWebContents(event.sender)
+   if (!win) {
+      throw new Error('Window controls were called by an unknown renderer')
+   }
+
+   return win
+}
+
+ipcMain.handle('window:minimize', (event) => {
+   getWindowFromEvent(event).minimize()
+})
+
+ipcMain.handle('window:toggle-maximize', (event) => {
+   const win = getWindowFromEvent(event)
+   if (win.isMaximized()) {
+      win.unmaximize()
+   } else {
+      win.maximize()
+   }
+
+   return win.isMaximized()
+})
+
+ipcMain.handle('window:is-maximized', (event) => getWindowFromEvent(event).isMaximized())
+
+ipcMain.handle('window:close', (event) => {
+   getWindowFromEvent(event).close()
+})
+
 function createWindow() {
    const iconPath = app.isPackaged
       ? join(process.resourcesPath, 'desktop_assets', 'icon.ico')
@@ -24,6 +54,7 @@ function createWindow() {
       height: 800,
       minWidth: 800,
       minHeight: 600,
+      frame: false,
       title: config.APP_WINDOW_NAME,
       icon: iconPath,
       show: true,
@@ -40,6 +71,13 @@ function createWindow() {
 
    win.on('ready-to-show', () => {
       win.show()
+   })
+
+   win.on('maximize', () => {
+      win.webContents.send('window:maximize-change', true)
+   })
+   win.on('unmaximize', () => {
+      win.webContents.send('window:maximize-change', false)
    })
 
    Menu.setApplicationMenu(null)

@@ -35,6 +35,7 @@ const NavBar = () => {
                      location.pathname === slug
                         ? `color-mix(in srgb, ${t.palette.primary[500]} 20%, transparent)`
                         : undefined,
+                  WebkitAppRegion: 'no-drag',
                }}
             >
                {label}
