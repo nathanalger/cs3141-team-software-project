@@ -14,5 +14,9 @@
       "package": "deno task build && electron-builder",
       "test": "vitest run",
       "test:watch": "vitest"
+   },
+   "allowScripts": {
+      "allow": ["npm:electron-winstaller@5.4.0", "npm:esbuild@0.28.2","npm:pnpm"],
+      "deny": []
    }
 }
