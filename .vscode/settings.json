@@ -1,7 +1,10 @@
 {
-  "deno.enablePaths": ["server/"],
-  "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "editor.formatOnPaste": true,
-  "editor.formatOnSave": true,
-  "editor.tabSize": 3
+   "deno.enablePaths": ["server/"],
+   "editor.defaultFormatter": "esbenp.prettier-vscode",
+   "editor.formatOnPaste": true,
+   "editor.formatOnSave": true,
+   "editor.tabSize": 3,
+   "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": "always"
+   }
 }
