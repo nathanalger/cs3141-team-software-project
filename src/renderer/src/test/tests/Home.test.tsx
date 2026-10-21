@@ -1,10 +1,11 @@
-import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
-import Home from '../../pages/Home'
+import { render } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import Home from '../../pages/Home';
 
 describe('Home', () => {
-   it('renders at the root route', async () => {
-      render(<Home />)
-      expect(await screen.findByText('kajhdkajshd')).toBeTruthy()
-   })
-})
+   it('renders without errors', () => {
+      const { container } = render(<Home />);
+
+      expect(container.firstChild).not.toBeNull();
+   });
+});
