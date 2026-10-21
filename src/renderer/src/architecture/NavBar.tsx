@@ -36,8 +36,9 @@ const NavBar = () => {
                   bgcolor: (t) =>
                      isSlugActive(location.pathname, slug)
                         ? `color-mix(in srgb, ${t.palette.primary[500]} 20%, transparent)`
-                        : undefined,
+                        : 'transparent',
                   WebkitAppRegion: 'no-drag',
+                  transition: 'background-color 80ms ease-in-out',
                }}
             >
                {label}
