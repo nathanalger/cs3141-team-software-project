@@ -4,6 +4,8 @@ import { router } from '../../router';
 import { RouterProvider } from 'react-router-dom';
 import PageWrapper from '../../architecture/PageWrapper';
 import Provider from '../../architecture/Provider';
+import Architecture from '../../architecture/ErrorCatch';
+import { vi } from 'vitest';
 
 describe('Architecture', () => {
    it('renders router provider successfully', () => {
@@ -30,5 +32,24 @@ describe('Architecture', () => {
       );
 
       expect(container.firstChild).not.toBeNull();
+   });
+
+   it('renders a fallback when a child throws during rendering', () => {
+      const consoleError = vi.spyOn(console, 'error').mockImplementation(() => undefined);
+      const BrokenPage = () => {
+         throw new Error('Page render failed');
+      };
+
+      try {
+         const { getByRole } = render(
+            <Architecture>
+               <BrokenPage />
+            </Architecture>,
+         );
+
+         expect(getByRole('alert').textContent).toContain('Something went wrong');
+      } finally {
+         consoleError.mockRestore();
+      }
    });
 });
