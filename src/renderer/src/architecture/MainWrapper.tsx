@@ -1,6 +1,7 @@
-import { Box, Typography, useColorScheme } from '@mui/joy';
+import { Box, useColorScheme } from '@mui/joy';
 import type { SxProps } from '@mui/joy/styles/types';
 import { Outlet } from 'react-router-dom';
+import NavBar from './NavBar';
 
 const NAV_THICKNESS = 60;
 
@@ -49,7 +50,7 @@ const MainWrapper = () => {
             >
                <Box
                   component="img"
-                  src="/image.png"
+                  src="/top-left-logo.png"
                   alt="Application logo"
                   sx={{
                      display: 'block',
@@ -81,7 +82,7 @@ const MainWrapper = () => {
                   flex: 1,
                }}
             >
-               <Typography>ajhsd</Typography>
+               <NavBar />
             </Box>
          </Box>
          <Box

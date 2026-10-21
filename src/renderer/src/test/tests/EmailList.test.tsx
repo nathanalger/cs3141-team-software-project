@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import EmailList from '../../pages/EmailList';
+import InboxPage from '../../pages/InboxPage';
 
 describe('Home', () => {
    it('renders without errors', () => {
-      const { container } = render(<EmailList />);
+      const { container } = render(<InboxPage />);
 
       expect(container.firstChild).not.toBeNull();
    });

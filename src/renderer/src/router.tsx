@@ -1,11 +1,15 @@
 import { createMemoryRouter } from 'react-router-dom';
 import MainWrapper from './architecture/MainWrapper';
-import EmailList from './pages/EmailList';
+import InboxPage from './pages/InboxPage';
+import SettingsPage from './pages/Settings';
 
 export const router = createMemoryRouter([
    {
       path: '/',
       element: <MainWrapper />,
-      children: [{ index: true, element: <EmailList /> }],
+      children: [
+         { index: true, element: <InboxPage /> },
+         { path: '/settings', element: <SettingsPage /> },
+      ],
    },
 ]);
