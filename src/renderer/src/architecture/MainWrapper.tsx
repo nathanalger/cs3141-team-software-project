@@ -6,6 +6,7 @@ import Minimize from '@mui/icons-material/Minimize';
 import type { SxProps } from '@mui/joy/styles/types';
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
+import ErrorCatch from './ErrorCatch';
 import NavBar from './NavBar';
 import FunctionBar from './FunctionBar';
 
@@ -148,7 +149,9 @@ const MainWrapper = () => {
             {/* Left Bar */}
             <FunctionBar />
             <Box sx={{ ...MainWrapperSx, minWidth: 0 }}>
-               <Outlet />
+               <ErrorCatch>
+                  <Outlet />
+               </ErrorCatch>
             </Box>
          </Box>
       </Box>
