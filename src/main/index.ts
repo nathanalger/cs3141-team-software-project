@@ -1,6 +1,7 @@
 import { app, BrowserWindow, Menu } from 'electron'
 import { join } from 'node:path'
 import * as config from '../config'
+import { init as initDb } from './db'
 
 app.on('render-process-gone', (_event, _webContents, details) => {
    console.error('[main] Renderer process gone:', details)
@@ -60,6 +61,7 @@ function createWindow() {
 
 app.whenReady()
    .then(() => {
+      initDb()
       createWindow()
 
       app.on('activate', () => {
