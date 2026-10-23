@@ -1,2 +1,4 @@
 allowBuilds:
-  electron-winstaller: false
+   electron: true
+   electron-winstaller: true
+   esbuild: true

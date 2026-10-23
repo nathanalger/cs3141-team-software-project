@@ -6,17 +6,27 @@ A project for MTU-CS3141 Team Software Project. The application is a frontend cl
 
 Open [Getting Started](./getting-started.md).
 
-## Start Local Servers
+## Start the Desktop App
 
-In the root folder (`cs3141-team-software-project`), run:
+Install [Deno](https://deno.com/) and pnpm, then run this from the repository root to start dev app:
 
 ```sh
 deno task dev
 ```
 
-This will launch the frontend server alongside an electron instance.
+To build a "release" version, run:
 
-Backend: http://localhost:8000/
+```sh
+deno task package
+```
+
+If electron gives you a fit about "Electron Uninstall," run this and allow permissions:
+
+```sh
+pnpm electron_fix
+```
+
+For installing packages, use pnpm, _not deno_!
 
 ## Appendix
 

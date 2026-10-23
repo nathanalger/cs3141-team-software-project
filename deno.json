@@ -1,18 +1,22 @@
 {
    "nodeModulesDir": "auto",
    "tasks": {
-      "install": "deno install",
-      "electron:install": "node ./node_modules/.deno/electron@44.9.0/node_modules/electron/install.js",
+      "install": "pnpm install",
+      "electron_fix": "node ./node_modules/electron/install.js",
       "dev": {
-         "description": "Install dependencies, install Electron runtime, and start the desktop app",
-         "dependencies": ["install", "electron:install"],
-         "command": "electron-vite dev"
+         "description": "Install dependencies, install Electron runtime, and start the API and desktop app",
+         "dependencies": ["install", "electron_fix"],
+         "command": "deno task client"
       },
+      "client": "electron-vite dev",
       "build": "electron-vite build",
       "preview": "electron-vite preview",
       "package": "deno task build && electron-builder",
       "test": "vitest run",
       "test:watch": "vitest"
    },
-   "allowScripts": ["npm:electron", "npm:electron-winstaller"]
+   "allowScripts": {
+      "allow": ["npm:electron-winstaller@5.4.0", "npm:esbuild@0.28.2","npm:pnpm"],
+      "deny": []
+   }
 }
