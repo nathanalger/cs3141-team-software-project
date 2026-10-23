@@ -13,7 +13,16 @@ dist-ssr
 *.local
 
 out/
-/release
+release/
+coverage/
+
+# Env / secrets
+.env
+.env.*
+
+# AI tools
+.claude/
+CLAUDE.local.md
 
 # Editor directories and files
 .vscode/*
