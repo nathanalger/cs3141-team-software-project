@@ -2,10 +2,14 @@
    "nodeModulesDir": "auto",
    "tasks": {
       "install": "pnpm install",
-      "electron_fix": "node ./node_modules/electron/install.js",
+      "electron_fix": {
+         "description": "Download the Electron binary",
+         "dependencies": ["install"],
+         "command": "node ./node_modules/electron/install.js"
+      },
       "dev": {
          "description": "Install dependencies, install Electron runtime, and start the API and desktop app",
-         "dependencies": ["install", "electron_fix"],
+         "dependencies": ["electron_fix"],
          "command": "deno task client"
       },
       "client": "electron-vite dev",
