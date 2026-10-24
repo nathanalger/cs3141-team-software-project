@@ -1,0 +1,21 @@
+@startuml
+left to right direction
+
+actor User
+actor "API Caller" as Caller
+actor "IMAP Server" as IMAP
+actor "SMTP Server" as SMTP
+
+rectangle "Email Client (current implementation)" {
+  usecase "View sample inbox" as ViewInbox
+  usecase "List remote mailboxes\n" as ListMailboxes
+  usecase "Send test email\n" as SendEmail
+}
+
+User --> ViewInbox
+Caller --> ListMailboxes
+Caller --> SendEmail
+ListMailboxes --> IMAP
+SendEmail --> SMTP
+
+@enduml

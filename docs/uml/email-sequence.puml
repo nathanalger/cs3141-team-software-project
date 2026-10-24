@@ -1,0 +1,29 @@
+@startuml
+actor User
+participant InboxPage
+participant "generateSampleEmails()" as Factory
+participant EmailGrid
+
+User -> InboxPage: Open inbox
+InboxPage -> Factory: generateSampleEmails()
+Factory --> InboxPage: StoredEmail[]
+InboxPage -> EmailGrid: render(messages)
+EmailGrid -> EmailGrid: For each message, show subject and text
+EmailGrid --> User: Display sample inbox
+
+actor "API Caller" as Caller
+participant "listMailboxes()" as MailboxAPI
+participant "sendEmail()" as SendAPI
+participant "IMAP Server" as IMAP
+participant "SMTP Server" as SMTP
+
+Caller -> MailboxAPI: listMailboxes()
+MailboxAPI -> IMAP: Connect and list mailboxes
+IMAP --> MailboxAPI: Mailbox paths
+MailboxAPI --> Caller: Complete and log paths
+
+Caller -> SendAPI: sendEmail()
+SendAPI -> SMTP: Send configured test message
+SMTP --> SendAPI: Message ID
+SendAPI --> Caller: Complete and log result
+@enduml

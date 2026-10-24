@@ -1,0 +1,50 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+class EmailAddress {
+  address: string
+  name?: string
+}
+
+class EmailMessage {
+  id: string
+  messageId?: string
+  subject: string
+  text?: string
+  html?: string
+  date?: Date
+  from: EmailAddress[]
+  to: EmailAddress[]
+  cc: EmailAddress[]
+  bcc: EmailAddress[]
+  replyTo: EmailAddress[]
+  references: string[]
+}
+
+class StoredEmail {
+  mailbox: string
+  uid: number
+  uidValidity: number
+  flags: Set<string>
+  internalDate?: Date
+  size?: number
+}
+
+class OutgoingEmail {
+  envelope?: Envelope
+}
+
+class Envelope {
+  from: string
+  to: string[]
+}
+
+StoredEmail "1" *-- "1" EmailMessage : message
+OutgoingEmail "1" *-- "1" EmailMessage : message
+OutgoingEmail "1" *-- "0..1" Envelope : envelope
+EmailMessage "*" --> "*" EmailAddress : addresses
+InboxPage ..> SampleEmailFactory : generates sample messages
+InboxPage ..> EmailGrid : supplies StoredEmail[]
+EmailGrid ..> StoredEmail : displays subject and text
+
+@enduml
