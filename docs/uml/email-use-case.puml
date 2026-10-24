@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+
+actor User
+actor "API Caller" as Caller
+actor "IMAP Server" as IMAP
+actor "SMTP Server" as SMTP
+
+rectangle "Email Client (current implementation)" {
+  usecase "View sample inbox" as ViewInbox
+  usecase "List remote mailboxes\n(sample API)" as ListMailboxes
+  usecase "Send test email\n(sample API)" as SendEmail
+}
+
+User --> ViewInbox
+Caller --> ListMailboxes
+Caller --> SendEmail
+ListMailboxes --> IMAP
+SendEmail --> SMTP
+
+note bottom of ViewInbox
+  Inbox uses generated sample messages;
+  live message retrieval is not implemented.
+end note
+@enduml

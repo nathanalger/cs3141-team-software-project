@@ -1,9 +1,11 @@
-import { Card, Typography } from '@mui/joy';
+import { Card } from '@mui/joy';
+import EmailGrid from '../components/EmailGrid';
+import { generateSampleEmails } from '../../../types/email';
 
 const InboxPage = () => {
    return (
       <Card>
-         <Typography>Inbox Page!</Typography>
+         <EmailGrid messages={generateSampleEmails()} />
       </Card>
    );
 };
