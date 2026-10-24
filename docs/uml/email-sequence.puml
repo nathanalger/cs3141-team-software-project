@@ -11,8 +11,6 @@ InboxPage -> EmailGrid: render(messages)
 EmailGrid -> EmailGrid: For each message, show subject and text
 EmailGrid --> User: Display sample inbox
 
-== Standalone sample APIs (not connected to inbox UI) ==
-
 actor "API Caller" as Caller
 participant "listMailboxes()" as MailboxAPI
 participant "sendEmail()" as SendAPI
