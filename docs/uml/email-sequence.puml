@@ -1,12 +1,12 @@
 @startuml
 actor User
 participant InboxPage
-participant "generateSampleEmails()" as Factory
+participant "fetchEmails()" as IMAP
 participant EmailGrid
 
 User -> InboxPage: Open inbox
-InboxPage -> Factory: generateSampleEmails()
-Factory --> InboxPage: StoredEmail[]
+InboxPage -> IMAP: fetchEmails()
+IMAP--> InboxPage: StoredEmail[]
 InboxPage -> EmailGrid: render(messages)
 EmailGrid -> EmailGrid: For each message, show subject and text
 EmailGrid --> User: Display sample inbox
