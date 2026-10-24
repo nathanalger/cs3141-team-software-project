@@ -18,11 +18,11 @@ const EmailGrid = ({ messages }: { messages: StoredEmail[] }) => {
             flexDirection: 'column',
          }}
       >
-         {messages.map((email) => (
+         {messages.map((email, idx) => (
             <Box
                key={email.uid}
                sx={{
-                  borderBottom: (t) => `1px solid ${t.palette.divider}`,
+                  borderBottom: idx == messages.length - 1 ? 'none' : (t) => `1px solid ${t.palette.divider}`,
                   height: 45,
                   width: '100%',
                   display: 'flex',
