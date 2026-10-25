@@ -1,7 +1,13 @@
 import { app } from 'electron';
 import { readFileSync, renameSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { getSettingKey, SETTINGS_SCHEMA, type SettingValue, type SettingsValues } from '../types/settings';
+import {
+   getSettingKey,
+   isValidHexColor,
+   SETTINGS_SCHEMA,
+   type SettingValue,
+   type SettingsValues,
+} from '../types/settings';
 
 function getSettingsPath() {
    return join(app.getPath('userData'), 'settings.json');
@@ -30,6 +36,7 @@ function getSettingDefinition(key: string) {
 function isValidForSetting(key: string, value: unknown) {
    const setting = getSettingDefinition(key);
    if (!setting) return false;
+   if (setting.type === 'color') return isValidHexColor(value);
    if (setting.type === 'boolean') return typeof value === 'boolean';
    if (setting.type === 'text') return typeof value === 'string';
 
@@ -55,7 +62,11 @@ export function readSettings(): SettingsValues {
          if (!isSettingValue(value)) {
             throw new Error(`Invalid value for setting "${key}"`);
          }
-         if (getSettingDefinition(key) && !isValidForSetting(key, value)) {
+         const setting = getSettingDefinition(key);
+         if (setting?.type === 'color' && !isValidForSetting(key, value)) {
+            continue;
+         }
+         if (setting && !isValidForSetting(key, value)) {
             throw new Error(`Stored value does not match the definition for setting "${key}"`);
          }
          values[key] = value;

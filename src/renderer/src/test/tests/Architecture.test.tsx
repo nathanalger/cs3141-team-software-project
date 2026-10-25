@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { router } from '../../router';
 import { RouterProvider } from 'react-router-dom';
 import PageWrapper from '../../architecture/PageWrapper';
-import Provider from '../../architecture/Provider';
+import ThemeColorProvider from '../../architecture/ThemeColorProvider';
 import Architecture from '../../architecture/ErrorCatch';
 import { vi } from 'vitest';
 
@@ -14,11 +14,11 @@ describe('Architecture', () => {
       expect(container.firstChild).not.toBeNull();
    });
 
-   it('renders Provider successfully', () => {
+   it('renders ThemeColorProvider successfully', () => {
       const { container } = render(
-         <Provider>
+         <ThemeColorProvider>
             <>Test</>
-         </Provider>,
+         </ThemeColorProvider>,
       );
 
       expect(container.firstChild).not.toBeNull();
