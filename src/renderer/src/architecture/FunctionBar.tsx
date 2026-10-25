@@ -140,7 +140,7 @@ const FunctionBar = () => {
                         flexShrink: 0,
                         borderRadius: 0,
                         minHeight: 44,
-                        px: 1.5 + 0.7,
+                        px: 2.95,
                         whiteSpace: 'nowrap',
                         bgcolor: (t) =>
                            isActive || isExpanded

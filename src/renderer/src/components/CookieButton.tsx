@@ -6,7 +6,7 @@ const CookieButtonSx = {
    bgcolor: 'transparent',
    borderRadius: 9999,
    height: 30,
-   px: 1,
+   px: 1.5,
 } as SxProps;
 
 const CookieButton = ({
