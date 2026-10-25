@@ -1,10 +1,10 @@
 import EmailGrid from '../components/EmailGrid';
 import EmailRenderer from '../components/EmailRenderer';
 import { generateSampleEmails, type StoredEmail } from '../../../types/email';
-import { getSettingKey } from '../../../types/settings';
 import { useState } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import Section from '../components/Section';
+import { getSettingKey } from '../../../types/settings';
 
 const InboxPage = () => {
    const [messages] = useState(() => generateSampleEmails());
