@@ -85,7 +85,16 @@ const EmailGrid = ({
                   </Box>
 
                   <Box
-                     sx={{ display: 'flex', flex: 1, minWidth: 0, userSelect: 'none' }}
+                     sx={{
+                        display: 'flex',
+                        flex: 1,
+                        minWidth: 0,
+                        userSelect: 'none',
+                        height: '100%',
+                        alignContent: 'center',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                     }}
                      onClick={() => {
                         if (activeSelect) toggleSelectedMessage(email.uid);
                         else {
@@ -99,7 +108,7 @@ const EmailGrid = ({
 
                      <Typography sx={{ flex: 5, ...truncateSx }}>{email.message.text}</Typography>
 
-                     <Typography fontWeight={600} textAlign={'right'} sx={{ ...truncateSx, mr: 1 }}>
+                     <Typography fontWeight={600} textAlign={'right'} sx={{ ...truncateSx, mx: 1 }}>
                         {(email.internalDate ?? email.message.date)?.toLocaleString(undefined, {
                            dateStyle: 'medium',
                            timeStyle: 'short',
