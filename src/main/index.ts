@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme, type IpcMainInvokeEvent } from 'electron';
 import { join } from 'node:path';
 import * as config from '../config';
-import { readSettings, writeSetting } from './settings';
+import { testMailConnections } from './mail-service';
 
 app.on('render-process-gone', (_event, _webContents, details) => {
    console.error('[main] Renderer process gone:', details);
@@ -35,7 +35,6 @@ ipcMain.handle('window:toggle-maximize', (event) => {
    } else {
       win.maximize();
    }
-
    return win.isMaximized();
 });
 
@@ -45,14 +44,9 @@ ipcMain.handle('window:close', (event) => {
    getWindowFromEvent(event).close();
 });
 
-ipcMain.handle('settings:get-all', (event) => {
+ipcMain.handle('mail:test-connections', async (event) => {
    getWindowFromEvent(event);
-   return readSettings();
-});
-
-ipcMain.handle('settings:set', (event, key: string, value: unknown) => {
-   getWindowFromEvent(event);
-   return writeSetting(key, value);
+   return await testMailConnections();
 });
 
 function createWindow() {
