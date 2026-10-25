@@ -39,6 +39,7 @@ function isValidForSetting(key: string, value: unknown) {
    if (setting.type === 'color') return isValidHexColor(value);
    if (setting.type === 'boolean') return typeof value === 'boolean';
    if (setting.type === 'text') return typeof value === 'string';
+   if (setting.type !== 'number') return false;
 
    return (
       typeof value === 'number' &&

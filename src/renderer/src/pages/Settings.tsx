@@ -87,7 +87,6 @@ const ViewCategory = ({
 
                {subcategory.settings.map((setting) => {
                   const key = getSettingKey(category.name, subcategory.name, setting.name);
-                  const value = values[key] ?? setting.defaultValue;
 
                   return (
                      <Box
@@ -106,11 +105,15 @@ const ViewCategory = ({
                            <Typography level="body-sm">{setting.description}</Typography>
                         </Box>
                         <Box sx={{ pr: 1 }}>
-                           <SettingControl
-                              setting={setting}
-                              value={value}
-                              onChange={(newValue) => void setSetting(key, newValue)}
-                           />
+                           {setting.type === 'debug-button' ? (
+                              <SettingControl setting={setting} />
+                           ) : (
+                              <SettingControl
+                                 setting={setting}
+                                 value={values[key] ?? setting.defaultValue}
+                                 onChange={(newValue) => void setSetting(key, newValue)}
+                              />
+                           )}
                         </Box>
                      </Box>
                   );

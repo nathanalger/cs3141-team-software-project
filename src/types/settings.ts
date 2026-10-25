@@ -33,7 +33,14 @@ export interface NumberSetting extends BaseSetting {
    step?: number;
 }
 
-export type SettingDefinition = TextSetting | ColorSetting | BooleanSetting | NumberSetting;
+export interface DebugButtonSetting extends BaseSetting {
+   type: 'debug-button';
+   buttonLabel: string;
+   action: () => unknown | Promise<unknown>;
+}
+
+export type PersistedSettingDefinition = TextSetting | ColorSetting | BooleanSetting | NumberSetting;
+export type SettingDefinition = PersistedSettingDefinition | DebugButtonSetting;
 
 export interface SettingsSubcategory {
    name: string;
@@ -46,7 +53,7 @@ export interface SettingsCategory {
    name: string;
    displayName: string;
    description: string;
-   icon: 'inbox' | 'palette' | 'person' | 'settings';
+   icon: 'inbox' | 'palette' | 'person' | 'settings' | 'debug';
    subcategories: SettingsSubcategory[];
 }
 
@@ -102,6 +109,38 @@ export const SETTINGS_SCHEMA: SettingsCategory[] = [
          },
       ],
    },
+   {
+      name: 'debug',
+      displayName: 'Debug',
+      description: 'Run diagnostic checks for development and troubleshooting.',
+      icon: 'debug',
+      subcategories: [
+         {
+            name: 'mail-connections',
+            displayName: 'Mail connections',
+            description: 'Check the configured mail server connections.',
+            settings: [
+               {
+                  name: 'test-mail-connections',
+                  displayName: 'Mail server connections',
+                  description:
+                     'Test authenticated TLS connections to the configured IMAP and SMTP test servers. This checks connectivity only; it does not send an email.',
+                  type: 'debug-button',
+                  buttonLabel: 'Test IMAP and SMTP connections',
+                  action: async () => {
+                     if (!window.desktop?.testMailConnections) {
+                        throw new Error(
+                           'The desktop connection-test API is unavailable. Restart the Electron app after installing the update.',
+                        );
+                     }
+
+                     return window.desktop.testMailConnections();
+                  },
+               },
+            ],
+         },
+      ],
+   },
 ];
 
 export type SettingsValues = Record<string, SettingValue>;
@@ -113,10 +152,11 @@ export const getDefaultSettings = (): SettingsValues =>
    Object.fromEntries(
       SETTINGS_SCHEMA.flatMap((category) =>
          category.subcategories.flatMap((subcategory) =>
-            subcategory.settings.map((setting) => [
-               getSettingKey(category.name, subcategory.name, setting.name),
-               setting.defaultValue,
-            ]),
+            subcategory.settings.flatMap((setting) =>
+               setting.type === 'debug-button'
+                  ? []
+                  : [[getSettingKey(category.name, subcategory.name, setting.name), setting.defaultValue]],
+            ),
          ),
       ),
    );

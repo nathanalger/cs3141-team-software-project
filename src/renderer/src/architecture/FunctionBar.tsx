@@ -1,4 +1,4 @@
-import { Help, Contacts, FormatPaint, Person, Inbox, Settings } from '@mui/icons-material';
+import { Help, Contacts, FormatPaint, Person, Inbox, Settings, BugReport } from '@mui/icons-material';
 import { Box, Button } from '@mui/joy';
 import { useEffect, useState } from 'react';
 import { NAV_THICKNESS } from './MainWrapper';
@@ -56,6 +56,8 @@ const SettingsSidebarItems: { slug: string; items: SidebarItem[] } = {
                <FormatPaint />
             ) : category.icon === 'person' ? (
                <Person />
+            ) : category.icon === 'debug' ? (
+               <BugReport />
             ) : (
                <Settings />
             ),

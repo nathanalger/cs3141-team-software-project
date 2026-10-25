@@ -32,6 +32,10 @@ The built-in setting types are:
   default color.
 - `number`: use a numeric `defaultValue`; optional `min`, `max`, and `step`
   constraints are supported and validated before saving.
+- `debug-button`: provide a `buttonLabel` and an `action` function. The button
+  runs the function, displays its returned value or any error, and does not
+  create or persist a setting value. Use this for diagnostic actions rather
+  than user preferences.
 
 The Settings page automatically renders the control and persists changes.
 To make a preference affect application behavior, read it through
@@ -72,7 +76,7 @@ automatically added to the function bar and the settings overview.
 
 ## Add a setting type
 
-Adding a new value type requires more than adding it to the schema:
+Adding a new persisted value type requires more than adding it to the schema:
 
 1. Extend `SettingValue` and add a corresponding setting definition in
    `src/types/settings.ts`.
@@ -80,6 +84,10 @@ Adding a new value type requires more than adding it to the schema:
    `src/renderer/src/components/SettingControl.tsx`.
 3. Update value validation and persistence in `src/main/settings.ts`.
 4. Use the new value from the relevant application component.
+
+Action-only types such as `debug-button` are not persisted values. Render them
+as controls in `SettingControl.tsx`, omit them from default and stored setting
+values, and reject them in the main-process setting validator.
 
 Keep settings values serializable as JSON. The main process only accepts keys
 present in `SETTINGS_SCHEMA` and validates their values before persisting them

@@ -1,5 +1,6 @@
 export {};
 import type { SettingValue, SettingsValues } from './settings';
+import type { MailConnectionResult } from '../shared/email';
 
 declare global {
    interface Window {
@@ -11,6 +12,7 @@ declare global {
          isMaximized: () => Promise<boolean>;
          getSettings: () => Promise<SettingsValues>;
          setSetting: (key: string, value: SettingValue) => Promise<SettingsValues>;
+         testMailConnections?: () => Promise<MailConnectionResult>;
          onMaximizeChange: (callback: (isMaximized: boolean) => void) => () => void;
       };
    }

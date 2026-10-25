@@ -105,5 +105,6 @@ async function testSmtpConnection(): Promise<MailConnectionStatus> {
 /** Tests secure connections only; it does not send email or expose credentials to the renderer. */
 export async function testMailConnections(): Promise<MailConnectionResult> {
    const results = await Promise.all([testImapConnection(), testSmtpConnection()]);
+   // eslint-disable-next-line @typescript-eslint/no-explicit-any
    return { success: results.every((result: any) => result.success), results };
 }
