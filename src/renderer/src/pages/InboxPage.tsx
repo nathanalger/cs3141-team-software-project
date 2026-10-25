@@ -1,11 +1,22 @@
 import { Card } from '@mui/joy';
 import EmailGrid from '../components/EmailGrid';
-import { generateSampleEmails } from '../../../types/email';
+import EmailRenderer from '../components/EmailRenderer';
+import { generateSampleEmails, type StoredEmail } from '../../../types/email';
+import { useState } from 'react';
 
 const InboxPage = () => {
+   const [messages] = useState(() => generateSampleEmails());
+   const [openedEmail, setOpenedEmail] = useState<StoredEmail | undefined>(undefined);
+
    return (
       <Card>
-         <EmailGrid messages={generateSampleEmails()} />
+         {!openedEmail && (
+            <EmailGrid
+               messages={messages}
+               onClick={setOpenedEmail}
+            />
+         )}
+         {openedEmail && <EmailRenderer email={openedEmail} onBack={() => setOpenedEmail(undefined)} />}
       </Card>
    );
 };
