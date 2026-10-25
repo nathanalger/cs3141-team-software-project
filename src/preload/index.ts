@@ -7,6 +7,7 @@ contextBridge.exposeInMainWorld('desktop', {
    toggleMaximize: () => ipcRenderer.invoke('window:toggle-maximize'),
    close: () => ipcRenderer.invoke('window:close'),
    isMaximized: () => ipcRenderer.invoke('window:is-maximized'),
+   testMailConnections: () => ipcRenderer.invoke('mail:test-connections'),
    getSettings: (): Promise<SettingsValues> => ipcRenderer.invoke('settings:get-all'),
    setSetting: (key: string, value: SettingValue): Promise<SettingsValues> =>
       ipcRenderer.invoke('settings:set', key, value),
