@@ -3,15 +3,15 @@ import { createRoot } from 'react-dom/client';
 import '@fontsource/inter';
 import { router } from './router';
 import { RouterProvider } from 'react-router-dom';
-import Provider from './architecture/Provider';
+import ThemeColorProvider from './architecture/ThemeColorProvider';
 import { SettingsProvider } from './settings/SettingsContext';
 
 createRoot(document.getElementById('root')!).render(
    <StrictMode>
-      <Provider>
-         <SettingsProvider>
+      <SettingsProvider>
+         <ThemeColorProvider>
             <RouterProvider router={router} />
-         </SettingsProvider>
-      </Provider>
+         </ThemeColorProvider>
+      </SettingsProvider>
    </StrictMode>,
 );

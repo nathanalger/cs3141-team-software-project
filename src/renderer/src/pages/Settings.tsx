@@ -8,6 +8,61 @@ import OptionSelection from '../components/OptionSelection';
 import OptionGroup from '../components/OptionGroup';
 import Section from '../components/Section';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { DEFAULT_PRIMARY_COLOR, isValidHexColor, type ColorSetting } from '../../../types/settings';
+
+const ColorSettingControl = ({
+   setting,
+   value,
+   onChange,
+}: {
+   setting: ColorSetting;
+   value: string;
+   onChange: (value: string) => void;
+}) => {
+   const [draft, setDraft] = useState(value);
+   const [validationError, setValidationError] = useState<string>();
+
+   useEffect(() => {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setDraft(value);
+   }, [value]);
+
+   const commitDraft = () => {
+      if (isValidHexColor(draft)) {
+         const normalizedColor = draft.toUpperCase();
+         setDraft(normalizedColor);
+         setValidationError(undefined);
+         onChange(normalizedColor);
+         return;
+      }
+
+      setDraft(DEFAULT_PRIMARY_COLOR);
+      setValidationError('Use # followed by six hexadecimal digits. The default blue was restored.');
+      onChange(setting.defaultValue);
+   };
+
+   return (
+      <Box>
+         <Input
+            type="text"
+            value={draft}
+            placeholder={setting.defaultValue}
+            onChange={(event) => setDraft(event.target.value)}
+            onBlur={commitDraft}
+            onKeyDown={(event) => {
+               if (event.key === 'Enter') event.currentTarget.blur();
+            }}
+            aria-label={setting.displayName}
+            slotProps={{ input: { maxLength: 7 } }}
+         />
+         {validationError && (
+            <Typography color="danger" level="body-xs" sx={{ mt: 0.5 }}>
+               {validationError}
+            </Typography>
+         )}
+      </Box>
+   );
+};
 
 const SettingControl = ({
    setting,
@@ -25,6 +80,10 @@ const SettingControl = ({
       // eslint-disable-next-line react-hooks/set-state-in-effect
       setDraft(String(value));
    }, [value]);
+
+   if (setting.type === 'color') {
+      return <ColorSettingControl setting={setting} value={String(value)} onChange={(color) => onChange(color)} />;
+   }
 
    if (setting.type === 'boolean') {
       return <Switch checked={Boolean(value)} onChange={(event) => onChange(event.target.checked)} />;
@@ -89,7 +148,13 @@ const AllSettings = () => {
    const navigate = useNavigate();
 
    return (
-      <Box>
+      <Box
+         sx={{
+            display: 'flex',
+            gap: 2,
+            flexDirection: 'column',
+         }}
+      >
          {SETTINGS_SCHEMA.map((category) => (
             <Section key={category.name} sx={{ textDecoration: 'none' }}>
                <Box sx={{ pb: 2, pt: 1 }}>
@@ -139,7 +204,7 @@ const ViewCategory = ({
    }, [category.name, hash, subcategoryName]);
 
    return (
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
          {subcategories.map((subcategory) => (
             <Section
                key={subcategory.name}
