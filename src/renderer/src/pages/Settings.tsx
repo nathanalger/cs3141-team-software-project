@@ -8,88 +8,19 @@ import OptionSelection from '../components/OptionSelection';
 import OptionGroup from '../components/OptionGroup';
 import Section from '../components/Section';
 import { useLocation, useNavigate } from 'react-router-dom';
-
-const SettingControl = ({
-   setting,
-   value,
-   onChange,
-}: {
-   setting: SettingDefinition;
-   value: string | boolean | number;
-   onChange: (value: string | boolean | number) => void;
-}) => {
-   const [draft, setDraft] = useState(String(value));
-   const [validationError, setValidationError] = useState<string>();
-
-   useEffect(() => {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setDraft(String(value));
-   }, [value]);
-
-   if (setting.type === 'boolean') {
-      return <Switch checked={Boolean(value)} onChange={(event) => onChange(event.target.checked)} />;
-   }
-
-   const commitDraft = () => {
-      if (setting.type === 'text') {
-         onChange(draft);
-         return;
-      }
-
-      const numberValue = Number(draft);
-      if (
-         !draft.trim() ||
-         !Number.isFinite(numberValue) ||
-         (setting.min !== undefined && numberValue < setting.min) ||
-         (setting.max !== undefined && numberValue > setting.max)
-      ) {
-         setValidationError(
-            `Enter a number${setting.min === undefined ? '' : ` of at least ${setting.min}`}${
-               setting.max === undefined ? '' : ` and at most ${setting.max}`
-            }.`,
-         );
-         setDraft(String(value));
-         return;
-      }
-
-      setValidationError(undefined);
-      onChange(numberValue);
-   };
-
-   return (
-      <Box>
-         <Input
-            type={setting.type}
-            value={draft}
-            placeholder={setting.type === 'text' ? setting.placeholder : undefined}
-            slotProps={{
-               input:
-                  setting.type === 'number' ? { min: setting.min, max: setting.max, step: setting.step } : undefined,
-            }}
-            onChange={(event) => {
-               setDraft(event.target.value);
-               setValidationError(undefined);
-            }}
-            onBlur={commitDraft}
-            onKeyDown={(event) => {
-               if (event.key === 'Enter') event.currentTarget.blur();
-            }}
-            aria-label={setting.displayName}
-         />
-         {validationError && (
-            <Typography color="danger" level="body-xs" sx={{ mt: 0.5 }}>
-               {validationError}
-            </Typography>
-         )}
-      </Box>
-   );
-};
+import SettingControl from '../components/SettingControl';
 
 const AllSettings = () => {
    const navigate = useNavigate();
 
    return (
-      <Box>
+      <Box
+         sx={{
+            display: 'flex',
+            gap: 2,
+            flexDirection: 'column',
+         }}
+      >
          {SETTINGS_SCHEMA.map((category) => (
             <Section key={category.name} sx={{ textDecoration: 'none' }}>
                <Box sx={{ pb: 2, pt: 1 }}>
@@ -139,7 +70,7 @@ const ViewCategory = ({
    }, [category.name, hash, subcategoryName]);
 
    return (
-      <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
          {subcategories.map((subcategory) => (
             <Section
                key={subcategory.name}

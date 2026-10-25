@@ -27,6 +27,9 @@ The built-in setting types are:
 
 - `boolean`: use `defaultValue: true` or `false`; rendered as a switch.
 - `text`: use a string `defaultValue`; an optional `placeholder` is supported.
+- `color`: use a `#RRGGBB` string `defaultValue`; values must start with `#`
+  and contain exactly six hexadecimal digits. Invalid input resets to the
+  default color.
 - `number`: use a numeric `defaultValue`; optional `min`, `max`, and `step`
   constraints are supported and validated before saving.
 
@@ -73,11 +76,16 @@ Adding a new value type requires more than adding it to the schema:
 
 1. Extend `SettingValue` and add a corresponding setting definition in
    `src/types/settings.ts`.
-2. Add a control and appropriate validation in `SettingControl` in
-   `src/renderer/src/pages/Settings.tsx`.
+2. Add a control and appropriate validation in
+   `src/renderer/src/components/SettingControl.tsx`.
 3. Update value validation and persistence in `src/main/settings.ts`.
 4. Use the new value from the relevant application component.
 
 Keep settings values serializable as JSON. The main process only accepts keys
 present in `SETTINGS_SCHEMA` and validates their values before persisting them
 in the Electron user-data `settings.json` file.
+
+The Appearance > Theme category contains the application primary color
+preference. The active Joy theme uses that valid hex value for the primary
+palette in light and dark mode. Invalid or missing values fall back to
+`DEFAULT_PRIMARY_COLOR` (`#0B6BCB`).
