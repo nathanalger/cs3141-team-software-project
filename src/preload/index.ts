@@ -14,7 +14,6 @@ contextBridge.exposeInMainWorld('desktop', {
    onMaximizeChange: (callback: (isMaximized: boolean) => void) => {
       const listener = (_event: Electron.IpcRendererEvent, isMaximized: boolean) => callback(isMaximized)
       ipcRenderer.on('window:maximize-change', listener)
-
       return () => ipcRenderer.removeListener('window:maximize-change', listener)
    },
 })

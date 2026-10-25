@@ -37,7 +37,6 @@ ipcMain.handle('window:toggle-maximize', (event) => {
    } else {
       win.maximize();
    }
-
    return win.isMaximized();
 });
 
@@ -47,14 +46,9 @@ ipcMain.handle('window:close', (event) => {
    getWindowFromEvent(event).close();
 });
 
-ipcMain.handle('settings:get-all', (event) => {
+ipcMain.handle('mail:test-connections', async (event) => {
    getWindowFromEvent(event);
-   return readSettings();
-});
-
-ipcMain.handle('settings:set', (event, key: string, value: unknown) => {
-   getWindowFromEvent(event);
-   return writeSetting(key, value);
+   return await testMailConnections();
 });
 
 ipcMain.handle('mail:test-connections', async (event) => {
