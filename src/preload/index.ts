@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import type { SettingValue, SettingsValues } from '../types/settings'
 
 contextBridge.exposeInMainWorld('desktop', {
    platform: process.platform,
@@ -7,6 +8,9 @@ contextBridge.exposeInMainWorld('desktop', {
    close: () => ipcRenderer.invoke('window:close'),
    isMaximized: () => ipcRenderer.invoke('window:is-maximized'),
    testMailConnections: () => ipcRenderer.invoke('mail:test-connections'),
+   getSettings: (): Promise<SettingsValues> => ipcRenderer.invoke('settings:get-all'),
+   setSetting: (key: string, value: SettingValue): Promise<SettingsValues> =>
+      ipcRenderer.invoke('settings:set', key, value),
    onMaximizeChange: (callback: (isMaximized: boolean) => void) => {
       const listener = (_event: Electron.IpcRendererEvent, isMaximized: boolean) => callback(isMaximized)
       ipcRenderer.on('window:maximize-change', listener)

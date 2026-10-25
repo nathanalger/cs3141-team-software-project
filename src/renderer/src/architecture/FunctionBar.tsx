@@ -3,13 +3,21 @@ import { Box, Button } from '@mui/joy';
 import { useEffect, useState } from 'react';
 import { NAV_THICKNESS } from './MainWrapper';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { SETTINGS_SCHEMA } from '../../../types/settings';
+import type { ReactNode } from 'react';
 
 const SIDEBAR_EXPANDED_WIDTH = 220;
+type SidebarItem = {
+   slug: string;
+   label: string;
+   icon: ReactNode;
+   children?: { slug: string; label: string }[];
+};
 
 /**
  * These are samples, this doesnt do anything right now
  */
-const InboxSidebarItems = {
+const InboxSidebarItems: { slug: string; items: SidebarItem[] } = {
    slug: '/inbox',
    items: [
       {
@@ -30,7 +38,7 @@ const InboxSidebarItems = {
    ],
 };
 
-const SettingsSidebarItems = {
+const SettingsSidebarItems: { slug: string; items: SidebarItem[] } = {
    slug: '/settings',
    items: [
       {
@@ -38,16 +46,24 @@ const SettingsSidebarItems = {
          label: 'All Settings',
          icon: <Settings />,
       },
-      {
-         slug: '/settings/personalization',
-         label: 'Personalization',
-         icon: <FormatPaint />,
-      },
-      {
-         slug: '/settings/accounts',
-         label: 'Accounts',
-         icon: <Person />,
-      },
+      ...SETTINGS_SCHEMA.map((category) => ({
+         slug: `/settings/${category.name}`,
+         label: category.displayName,
+         icon:
+            category.icon === 'inbox' ? (
+               <Inbox />
+            ) : category.icon === 'palette' ? (
+               <FormatPaint />
+            ) : category.icon === 'person' ? (
+               <Person />
+            ) : (
+               <Settings />
+            ),
+         children: category.subcategories.map((subcategory) => ({
+            slug: `/settings/${category.name}/${subcategory.name}`,
+            label: subcategory.displayName,
+         })),
+      })),
    ],
 };
 
@@ -106,15 +122,16 @@ const FunctionBar = () => {
                pointerEvents: isVisible ? 'auto' : 'none',
             }}
          >
-            {displayedCollection.items.map(({ slug, label, icon }) => {
+            {displayedCollection.items.flatMap(({ slug, label, icon, children }) => {
                const isActive = location.pathname === slug;
 
-               return (
+               const isExpanded = children?.length && location.pathname.startsWith(`${slug}/`);
+               return [
                   <Button
                      key={slug}
                      startDecorator={icon}
                      variant="plain"
-                     color={isActive ? 'primary' : 'neutral'}
+                     color={isActive || isExpanded ? 'primary' : 'neutral'}
                      onClick={() => navigate(slug)}
                      sx={{
                         justifyContent: 'flex-start',
@@ -124,7 +141,9 @@ const FunctionBar = () => {
                         px: 1.5 + 0.7,
                         whiteSpace: 'nowrap',
                         bgcolor: (t) =>
-                           isActive ? `color-mix(in srgb, ${t.palette.primary[500]} 20%, transparent)` : undefined,
+                           isActive || isExpanded
+                              ? `color-mix(in srgb, ${t.palette.primary[500]} 20%, transparent)`
+                              : undefined,
                      }}
                   >
                      <Box
@@ -132,18 +151,44 @@ const FunctionBar = () => {
                         sx={{
                            opacity: 0,
                            transition: 'opacity 120ms ease',
-                           '.left-sidebar:hover &': {
-                              opacity: 1,
-                           },
-                           '.left-sidebar:focus-within &': {
-                              opacity: 1,
-                           },
+                           '.left-sidebar:hover &': { opacity: 1 },
+                           '.left-sidebar:focus-within &': { opacity: 1 },
                         }}
                      >
                         {label}
                      </Box>
-                  </Button>
-               );
+                  </Button>,
+                  ...(isExpanded
+                     ? children.map((child) => (
+                          <Button
+                             key={child.slug}
+                             variant="plain"
+                             color={location.pathname === child.slug ? 'primary' : 'neutral'}
+                             onClick={() => navigate(child.slug)}
+                             sx={{
+                                justifyContent: 'flex-start',
+                                flexShrink: 0,
+                                borderRadius: 0,
+                                minHeight: 38,
+                                pl: 6,
+                                whiteSpace: 'nowrap',
+                             }}
+                          >
+                             <Box
+                                component="span"
+                                sx={{
+                                   opacity: 0,
+                                   transition: 'opacity 120ms ease',
+                                   '.left-sidebar:hover &': { opacity: 1 },
+                                   '.left-sidebar:focus-within &': { opacity: 1 },
+                                }}
+                             >
+                                {child.label}
+                             </Box>
+                          </Button>
+                       ))
+                     : []),
+               ];
             })}
          </Box>
       </Box>
