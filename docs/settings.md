@@ -76,8 +76,8 @@ Adding a new value type requires more than adding it to the schema:
 
 1. Extend `SettingValue` and add a corresponding setting definition in
    `src/types/settings.ts`.
-2. Add a control and appropriate validation in `SettingControl` in
-   `src/renderer/src/pages/Settings.tsx`.
+2. Add a control and appropriate validation in
+   `src/renderer/src/components/SettingControl.tsx`.
 3. Update value validation and persistence in `src/main/settings.ts`.
 4. Use the new value from the relevant application component.
 
