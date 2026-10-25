@@ -129,3 +129,61 @@ To rerun tests automatically as files change:
 pnpm test:watch
 ```
 
+## 6. Testing secure IMAP and SMTP connections
+
+The Settings page contains a **Test IMAP and SMTP connections** button. It checks whether the application can establish encrypted connections and authenticate to the configured servers. It does not send an email.
+
+### Environment variables
+
+Set these variables before launching the Electron application:
+
+| Variable | Required | Purpose |
+|---|---|---|
+| `IMAP_HOST` | Yes | IMAP test-server hostname |
+| `IMAP_PORT` | No | IMAP port; defaults to `993` |
+| `IMAP_USER` | Yes | IMAP test account username |
+| `IMAP_PASSWORD` | Yes | IMAP test account password |
+| `SMTP_HOST` | Yes | SMTP test-server hostname |
+| `SMTP_PORT` | No | SMTP port; defaults to `587` |
+| `SMTP_USER` | Yes | SMTP test account username |
+| `SMTP_PASSWORD` | Yes | SMTP test account password |
+
+Use the credentials and server details assigned by your instructor or team. The hostnames below are placeholders, not real test servers.
+
+### Windows PowerShell
+
+From the project root, set the variables in the same terminal session:
+
+```powershell
+$env:IMAP_HOST = "imap.example.test"
+$env:IMAP_PORT = "993"
+$env:IMAP_USER = "your-test-user"
+$env:IMAP_PASSWORD = "your-test-password"
+
+$env:SMTP_HOST = "smtp.example.test"
+$env:SMTP_PORT = "587"
+$env:SMTP_USER = "your-test-user"
+$env:SMTP_PASSWORD = "your-test-password"
+```
+
+Start the Electron application using the project's configured development task. For example, if `package.json` defines the `dev` script:
+
+```powershell
+pnpm.cmd dev
+```
+
+Alternatively, use the corresponding Deno task if it is configured to launch Electron.
+
+### TLS behavior
+
+- IMAP uses TLS with certificate verification enabled, normally on port `993`.
+- SMTP uses implicit TLS on port `465`.
+- On other configured SMTP ports, the client requires STARTTLS and verifies the server certificate.
+- The connection test authenticates to each server but does not send email.
+
+### Security
+
+- Never commit real passwords, tokens, or private credentials.
+- Do not put mail-server passwords in renderer code or shared frontend types.
+- Keep local credentials in environment variables or an approved local secrets mechanism.
+- If a connection fails, check the hostname, port, credentials, network access, and the server's TLS requirements.

@@ -1,3 +1,5 @@
+import type { MailConnectionResult } from '../../../shared/email';
+
 export {}
 
 declare global {
@@ -8,6 +10,7 @@ declare global {
          toggleMaximize: () => Promise<boolean>
          close: () => Promise<void>
          isMaximized: () => Promise<boolean>
+         testMailConnections: () => Promise<MailConnectionResult>;
          onMaximizeChange: (callback: (isMaximized: boolean) => void) => () => void
       }
    }
