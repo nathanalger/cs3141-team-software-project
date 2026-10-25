@@ -19,6 +19,7 @@ coverage/
 # Env / secrets
 .env
 .env.*
+!.env.example
 
 # AI tools
 .claude/

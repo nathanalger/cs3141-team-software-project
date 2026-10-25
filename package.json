@@ -14,6 +14,7 @@
       "@fontsource/inter": "^5.3.0",
       "@mui/icons-material": "^9.5.0",
       "@mui/joy": "5.0.0-beta.52",
+      "dotenv": "^18.0.9",
       "imapflow": "^1.7.8",
       "nodemailer": "^6.10.1",
       "react": "^19.2.8",

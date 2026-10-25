@@ -150,29 +150,33 @@ Set these variables before launching the Electron application:
 
 Use the credentials and server details assigned by your instructor or team. The hostnames below are placeholders, not real test servers.
 
-### Windows PowerShell
+### Configure a local `.env` file
 
-From the project root, set the variables in the same terminal session:
+Copy the example file in the project root and replace the placeholder values
+with the credentials and server details assigned by your instructor or team.
+The `.env` file is ignored by Git, so your local credentials will not be
+committed.
 
-```powershell
-$env:IMAP_HOST = "imap.example.test"
-$env:IMAP_PORT = "993"
-$env:IMAP_USER = "your-test-user"
-$env:IMAP_PASSWORD = "your-test-password"
-
-$env:SMTP_HOST = "smtp.example.test"
-$env:SMTP_PORT = "587"
-$env:SMTP_USER = "your-test-user"
-$env:SMTP_PASSWORD = "your-test-password"
-```
-
-Start the Electron application using the project's configured development task. For example, if `package.json` defines the `dev` script:
+Windows PowerShell:
 
 ```powershell
-pnpm.cmd dev
+Copy-Item .env.example .env
 ```
 
-Alternatively, use the corresponding Deno task if it is configured to launch Electron.
+Linux/macOS:
+
+```sh
+cp .env.example .env
+```
+
+Edit `.env` and launch the app from the project root with:
+
+```sh
+deno task dev
+```
+
+The Electron main process loads `.env` at startup. Variables already set in the
+environment take precedence over values in the file.
 
 ### TLS behavior
 
@@ -185,5 +189,5 @@ Alternatively, use the corresponding Deno task if it is configured to launch Ele
 
 - Never commit real passwords, tokens, or private credentials.
 - Do not put mail-server passwords in renderer code or shared frontend types.
-- Keep local credentials in environment variables or an approved local secrets mechanism.
+- Keep local credentials in the ignored `.env` file or an approved local secrets mechanism.
 - If a connection fails, check the hostname, port, credentials, network access, and the server's TLS requirements.

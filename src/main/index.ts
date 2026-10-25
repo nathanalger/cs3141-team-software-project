@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme, type IpcMainInvokeEvent } from 'electron';
 import { join } from 'node:path';
 import * as config from '../config';
