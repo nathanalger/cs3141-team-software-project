@@ -16,9 +16,13 @@ const truncateSx = {
 const EmailGrid = ({
    messages = [],
    onClick,
+   showPreview = true,
+   showReceivedDate = true,
 }: {
    messages?: StoredEmail[];
    onClick?: (storedEmail: StoredEmail) => void;
+   showPreview?: boolean;
+   showReceivedDate?: boolean;
 }) => {
    const [selectedMessages, setSelectedMessages] = useState<number[]>([]);
    const activeSelect = selectedMessages.length > 0;
@@ -106,14 +110,18 @@ const EmailGrid = ({
                         {email.message.subject}
                      </Typography>
 
-                     <Typography sx={{ flex: 5, ...truncateSx }}>{email.message.text}</Typography>
+                     {showPreview && (
+                        <Typography sx={{ flex: 5, ...truncateSx }}>{email.message.text}</Typography>
+                     )}
 
-                     <Typography fontWeight={600} textAlign={'right'} sx={{ ...truncateSx, mx: 1 }}>
-                        {(email.internalDate ?? email.message.date)?.toLocaleString(undefined, {
-                           dateStyle: 'medium',
-                           timeStyle: 'short',
-                        })}
-                     </Typography>
+                     {showReceivedDate && (
+                        <Typography fontWeight={600} textAlign={'right'} sx={{ ...truncateSx, mx: 1 }}>
+                           {(email.internalDate ?? email.message.date)?.toLocaleString(undefined, {
+                              dateStyle: 'medium',
+                              timeStyle: 'short',
+                           })}
+                        </Typography>
+                     )}
                   </Box>
                </Box>
             </Box>
