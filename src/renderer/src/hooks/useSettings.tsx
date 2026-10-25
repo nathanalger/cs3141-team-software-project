@@ -1,10 +1,15 @@
 import { createContext, useContext } from 'react';
+import { getDefaultSettings } from '../../../types/settings';
+import type { SettingValue } from '../../../types/settings';
 import type { SettingsContextValue } from '../settings/SettingsContext';
 
-export const SettingsContext = createContext<SettingsContextValue | undefined>(undefined);
-
-export const useSettings = () => {
-   const context = useContext(SettingsContext);
-   if (!context) throw new Error('useSettings must be used within SettingsProvider');
-   return context;
+const defaultSettingsContext: SettingsContextValue = {
+   values: getDefaultSettings(),
+   loading: false,
+   error: undefined,
+   setSetting: async (_key: string, _value: SettingValue) => {},
 };
+
+export const SettingsContext = createContext<SettingsContextValue>(defaultSettingsContext);
+
+export const useSettings = () => useContext(SettingsContext);
