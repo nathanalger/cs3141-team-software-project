@@ -17,7 +17,7 @@ export const router = createMemoryRouter([
       path: '/',
       element: <MainWrapper />,
       children: [
-         { index: true, element: <Navigate to="/inbox" replace /> },
+         { index: true, element: <Navigate to="/settings" replace /> },
          {
             path: 'inbox',
             element: <Outlet />,
@@ -32,8 +32,8 @@ export const router = createMemoryRouter([
             element: <Outlet />,
             children: [
                { index: true, element: <SettingsPage /> },
-               { path: 'personalization', element: <></> },
-               { path: 'accounts', element: <></> },
+               { path: ':category', element: <SettingsPage /> },
+               { path: ':category/:subcategory', element: <SettingsPage /> },
             ],
          },
       ],

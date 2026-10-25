@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, Menu, nativeTheme, type IpcMainInvokeEvent } from 'electron';
 import { join } from 'node:path';
 import * as config from '../config';
+import { readSettings, writeSetting } from './settings';
 
 app.on('render-process-gone', (_event, _webContents, details) => {
    console.error('[main] Renderer process gone:', details);
@@ -42,6 +43,16 @@ ipcMain.handle('window:is-maximized', (event) => getWindowFromEvent(event).isMax
 
 ipcMain.handle('window:close', (event) => {
    getWindowFromEvent(event).close();
+});
+
+ipcMain.handle('settings:get-all', (event) => {
+   getWindowFromEvent(event);
+   return readSettings();
+});
+
+ipcMain.handle('settings:set', (event, key: string, value: unknown) => {
+   getWindowFromEvent(event);
+   return writeSetting(key, value);
 });
 
 function createWindow() {
