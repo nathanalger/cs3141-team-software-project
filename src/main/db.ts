@@ -1,6 +1,6 @@
-import { app } from 'electron'
-import { resolve } from 'node:path'
-import { DatabaseSync } from 'node:sqlite'
+import { app } from 'electron';
+import { resolve } from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 
 const dbFilename = import.meta.env.MAIN_VITE_DB_FILE || 'app.db'
 
@@ -12,6 +12,7 @@ export function getDb() {
 }
 
 export function init() {
+   if (db) return db
 
    const dbPath = resolve(app.getPath('userData'), dbFilename)
 
@@ -23,8 +24,12 @@ export function init() {
       throw error
    }
 
-   app.on('will-quit', () => getDb().close())
+   app.once('will-quit', () => {
+      db?.close();
+      db = undefined;
+   })
    seedDB()
+   return db
 }
 
 function seedDB() {
@@ -45,7 +50,7 @@ function seedDB() {
             imapUser      TEXT,
             imapPassword  BLOB,                            -- encrypted with safeStorage
 
-            smtpHost      TEXT    NOT NULL,
+            smtpHost      TEXT,
             smtpPort      INTEGER NOT NULL DEFAULT 587,
             smtpSecurity  TEXT    NOT NULL DEFAULT 'starttls' CHECK (smtpSecurity IN ('tls', 'starttls', 'none')),
             smtpUser      TEXT,
@@ -55,6 +60,8 @@ function seedDB() {
             createdAt     TEXT    NOT NULL DEFAULT (datetime('now'))
          );
       `)
+
+      migrateOptionalSmtp()
 
       db.exec(`
          CREATE TABLE IF NOT EXISTS EmailFolders (
@@ -122,5 +129,65 @@ function seedDB() {
    } catch (error) {
       console.error('[db] Failed to seed Database:', error)
       throw error
+   }
+}
+
+function migrateOptionalSmtp() {
+   const db = getDb()
+   const columns = db.prepare('PRAGMA table_info(Accounts)').all() as {
+      name: string
+      notnull: number
+   }[]
+
+   if (!columns.some((column) => column.name === 'smtpHost' && column.notnull === 1)) return
+
+   db.exec('PRAGMA foreign_keys = OFF')
+   try {
+      db.exec('BEGIN IMMEDIATE')
+      try {
+         db.exec(`
+            CREATE TABLE Accounts_new (
+               accountID     INTEGER PRIMARY KEY AUTOINCREMENT,
+               fName         TEXT    NOT NULL,
+               lName         TEXT    NOT NULL,
+               displayName   TEXT,
+               email         TEXT    NOT NULL UNIQUE,
+               imapHost      TEXT    NOT NULL,
+               imapPort      INTEGER NOT NULL DEFAULT 993,
+               imapSecurity  TEXT    NOT NULL DEFAULT 'tls' CHECK (imapSecurity IN ('tls', 'starttls', 'none')),
+               imapUser      TEXT,
+               imapPassword  BLOB,
+               smtpHost      TEXT,
+               smtpPort      INTEGER NOT NULL DEFAULT 587,
+               smtpSecurity  TEXT    NOT NULL DEFAULT 'starttls' CHECK (smtpSecurity IN ('tls', 'starttls', 'none')),
+               smtpUser      TEXT,
+               smtpPassword  BLOB,
+               isDefault     INTEGER NOT NULL DEFAULT 0 CHECK (isDefault IN (0, 1)),
+               createdAt     TEXT    NOT NULL DEFAULT (datetime('now'))
+            );
+
+            INSERT INTO Accounts_new (
+               accountID, fName, lName, displayName, email,
+               imapHost, imapPort, imapSecurity, imapUser, imapPassword,
+               smtpHost, smtpPort, smtpSecurity, smtpUser, smtpPassword,
+               isDefault, createdAt
+            )
+            SELECT
+               accountID, fName, lName, displayName, email,
+               imapHost, imapPort, imapSecurity, imapUser, imapPassword,
+               smtpHost, smtpPort, smtpSecurity, smtpUser, smtpPassword,
+               isDefault, createdAt
+            FROM Accounts;
+
+            DROP TABLE Accounts;
+            ALTER TABLE Accounts_new RENAME TO Accounts;
+         `)
+         db.exec('COMMIT')
+      } catch (error) {
+         db.exec('ROLLBACK')
+         throw error
+      }
+   } finally {
+      db.exec('PRAGMA foreign_keys = ON')
    }
 }

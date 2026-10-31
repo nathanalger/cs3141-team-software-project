@@ -4,6 +4,9 @@ import { join } from 'node:path';
 import * as config from '../config';
 import { readSettings, writeSetting } from './settings';
 import { testMailConnections } from './mail-service';
+import { init as initializeDatabase } from './db';
+import { AccountDao } from './dao/AccountDao';
+import type { AccountInput, AccountUpdateInput } from '../shared/email';
 
 app.on('render-process-gone', (_event, _webContents, details) => {
    console.error('[main] Renderer process gone:', details);
@@ -62,6 +65,21 @@ ipcMain.handle('mail:test-connections', async (event) => {
    return await testMailConnections();
 })
 
+ipcMain.handle('accounts:list', (event) => {
+   getWindowFromEvent(event);
+   return new AccountDao().list();
+});
+
+ipcMain.handle('accounts:create', (event, input: AccountInput) => {
+   getWindowFromEvent(event);
+   return new AccountDao().create(input);
+});
+
+ipcMain.handle('accounts:update', (event, input: AccountUpdateInput) => {
+   getWindowFromEvent(event);
+   return new AccountDao().update(input);
+});
+
 function createWindow() {
    const iconPath = app.isPackaged
       ? join(process.resourcesPath, 'desktop_assets', 'icon.ico')
@@ -117,6 +135,7 @@ function createWindow() {
 
 app.whenReady()
    .then(() => {
+      initializeDatabase();
       createWindow();
 
       app.on('activate', () => {
@@ -134,6 +153,7 @@ app.whenReady()
    })
    .catch((error) => {
       console.error('[main] App initialization failed:', error);
+      app.quit();
    });
 
 app.on('window-all-closed', () => {

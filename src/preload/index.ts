@@ -1,5 +1,6 @@
-import { contextBridge, ipcRenderer } from 'electron'
-import type { SettingValue, SettingsValues } from '../types/settings'
+import { contextBridge, ipcRenderer } from 'electron';
+import type { SettingValue, SettingsValues } from '../types/settings';
+import type { AccountInput, AccountUpdateInput } from '../shared/email';
 
 contextBridge.exposeInMainWorld('desktop', {
    platform: process.platform,
@@ -8,13 +9,16 @@ contextBridge.exposeInMainWorld('desktop', {
    close: () => ipcRenderer.invoke('window:close'),
    isMaximized: () => ipcRenderer.invoke('window:is-maximized'),
    testMailConnections: () => ipcRenderer.invoke('mail:test-connections'),
+   getAccounts: () => ipcRenderer.invoke('accounts:list'),
+   createAccount: (account: AccountInput) => ipcRenderer.invoke('accounts:create', account),
+   updateAccount: (account: AccountUpdateInput) => ipcRenderer.invoke('accounts:update', account),
    getSettings: (): Promise<SettingsValues> => ipcRenderer.invoke('settings:get-all'),
    setSetting: (key: string, value: SettingValue): Promise<SettingsValues> =>
       ipcRenderer.invoke('settings:set', key, value),
    onMaximizeChange: (callback: (isMaximized: boolean) => void) => {
-      const listener = (_event: Electron.IpcRendererEvent, isMaximized: boolean) => callback(isMaximized)
-      ipcRenderer.on('window:maximize-change', listener)
+      const listener = (_event: Electron.IpcRendererEvent, isMaximized: boolean) => callback(isMaximized);
+      ipcRenderer.on('window:maximize-change', listener);
 
-      return () => ipcRenderer.removeListener('window:maximize-change', listener)
+      return () => ipcRenderer.removeListener('window:maximize-change', listener);
    },
-})
+});

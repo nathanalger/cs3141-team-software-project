@@ -2,6 +2,7 @@ import { createMemoryRouter, Navigate, Outlet } from 'react-router-dom';
 import MainWrapper from './architecture/MainWrapper';
 import InboxPage from './pages/InboxPage';
 import SettingsPage from './pages/Settings';
+import AccountTestPage from './pages/AccountTestPage';
 
 /**
  * When adding or changing pages, reflect changes in:
@@ -18,6 +19,7 @@ export const router = createMemoryRouter([
       element: <MainWrapper />,
       children: [
          { index: true, element: <Navigate to="/settings" replace /> },
+         { path: 'accounts', element: <AccountTestPage /> },
          {
             path: 'inbox',
             element: <Outlet />,

@@ -69,7 +69,18 @@ const SettingsSidebarItems: { slug: string; items: SidebarItem[] } = {
    ],
 };
 
-const collection = [InboxSidebarItems, SettingsSidebarItems];
+const AccountSidebarItems: { slug: string; items: SidebarItem[] } = {
+   slug: '/accounts',
+   items: [
+      {
+         slug: '/accounts',
+         label: 'Test account setup',
+         icon: <Person />,
+      },
+   ],
+};
+
+const collection = [InboxSidebarItems, AccountSidebarItems, SettingsSidebarItems];
 
 const FunctionBar = () => {
    const location = useLocation();

@@ -124,7 +124,7 @@ export const SETTINGS_SCHEMA: SettingsCategory[] = [
                   name: 'test-mail-connections',
                   displayName: 'Mail server connections',
                   description:
-                     'Test authenticated TLS connections to the configured IMAP and SMTP test servers. This checks connectivity only; it does not send an email.',
+                     'Test connections for saved accounts. This checks connectivity only; it does not send an email.',
                   type: 'debug-button',
                   buttonLabel: 'Test IMAP and SMTP connections',
                   action: async () => {

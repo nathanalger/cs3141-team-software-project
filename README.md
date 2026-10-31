@@ -33,3 +33,9 @@ For installing packages, use pnpm, _not deno_!
 ### Jira Link
 
 https://mtu-cs3141-team-11.atlassian.net/jira/
+
+## IMAP/SMTP Testing
+
+I have found that this website here is very helpful for faking an account:
+
+https://ethereal.email/create
