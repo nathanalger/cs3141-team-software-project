@@ -47,6 +47,7 @@ export interface SettingsSubcategory {
    displayName: string;
    description: string;
    settings: SettingDefinition[];
+   component?: 'manual-account-form' | 'account-management-list';
 }
 
 export interface SettingsCategory {
@@ -106,6 +107,28 @@ export const SETTINGS_SCHEMA: SettingsCategory[] = [
                   defaultValue: DEFAULT_PRIMARY_COLOR,
                },
             ],
+         },
+      ],
+   },
+   {
+      name: 'accounts',
+      displayName: 'Accounts',
+      description: 'Add and remove email accounts.',
+      icon: 'person',
+      subcategories: [
+         {
+            name: 'add-manual',
+            displayName: 'Add manual account',
+            description: 'Connect an email account using its IMAP and SMTP server settings.',
+            settings: [],
+            component: 'manual-account-form',
+         },
+         {
+            name: 'manage-accounts',
+            displayName: 'Manage accounts',
+            description: 'Set a default account or remove a saved account from this device.',
+            settings: [],
+            component: 'account-management-list',
          },
       ],
    },

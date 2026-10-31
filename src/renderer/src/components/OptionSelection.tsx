@@ -3,7 +3,17 @@ import { Box } from '@mui/joy';
 import type { SxProps } from '@mui/joy/styles/types';
 import type { ReactNode } from 'react';
 
-const OptionSelection = ({ children, onClick, sx }: { children?: ReactNode; onClick?: () => void; sx?: SxProps }) => {
+const OptionSelection = ({
+   children,
+   onClick,
+   sx,
+   showChevron = true,
+}: {
+   children?: ReactNode;
+   onClick?: () => void;
+   sx?: SxProps;
+   showChevron?: boolean;
+}) => {
    return (
       <Box
          sx={{
@@ -27,15 +37,17 @@ const OptionSelection = ({ children, onClick, sx }: { children?: ReactNode; onCl
          >
             {children}
          </Box>
-         <Box
-            sx={{
-               display: 'flex',
-               alignItems: 'center',
-               flexShrink: 0,
-            }}
-         >
-            <ChevronRight />
-         </Box>
+         {showChevron && (
+            <Box
+               sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  flexShrink: 0,
+               }}
+            >
+               <ChevronRight />
+            </Box>
+         )}
       </Box>
    );
 };

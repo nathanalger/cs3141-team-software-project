@@ -9,6 +9,7 @@ import OptionGroup from '../components/OptionGroup';
 import Section from '../components/Section';
 import { useLocation, useNavigate } from 'react-router-dom';
 import SettingControl from '../components/SettingControl';
+import AccountSettings from './AccountSettings';
 
 const AllSettings = () => {
    const navigate = useNavigate();
@@ -131,18 +132,23 @@ const SettingsPage = () => {
 
    let content;
    if (loading) {
-      content = <CircularProgress aria-label="Loading settings" />;
+      content = <CircularProgress />;
    } else if (categoryName && !category) {
       // Display an error (too lazy for this rn)
    } else if (category) {
-      content = <ViewCategory category={category} subcategoryName={subcategoryName} />;
+      content =
+         category.name === 'accounts' ? (
+            <AccountSettings subcategoryName={subcategoryName} />
+         ) : (
+            <ViewCategory category={category} subcategoryName={subcategoryName} />
+         );
    } else {
       content = <AllSettings />;
    }
 
    return (
       <PageWrapper sx={{ height: '100%', overflowY: 'auto' }}>
-         <Section sx={{ p: 2 }}>
+         <Section sx={{ p: 2, flexShrink: 0 }}>
             <Typography level="h2">{category?.displayName ?? 'Settings'}</Typography>
             <Typography level="body-sm">{category?.description ?? 'Manage your preferences.'}</Typography>
          </Section>

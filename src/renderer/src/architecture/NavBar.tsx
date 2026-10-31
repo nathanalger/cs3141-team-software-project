@@ -2,12 +2,10 @@ import { Box } from '@mui/joy';
 import CookieButton from '../components/CookieButton';
 import Inbox from '@mui/icons-material/Inbox';
 import Settings from '@mui/icons-material/Settings';
-import Person from '@mui/icons-material/Person';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const navItems = [
    { slug: '/inbox', label: 'Inbox', icon: <Inbox /> },
-   { slug: '/accounts', label: 'Accounts', icon: <Person /> },
    { slug: '/settings', label: 'Settings', icon: <Settings /> },
 ];
 
