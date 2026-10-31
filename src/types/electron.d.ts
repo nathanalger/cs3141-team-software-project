@@ -16,6 +16,7 @@ declare global {
          getAccounts: () => Promise<Account[]>;
          createAccount: (account: AccountInput) => Promise<Account>;
          updateAccount: (account: AccountUpdateInput) => Promise<Account>;
+         deleteAccount: (accountID: number) => Promise<void>;
          onMaximizeChange: (callback: (isMaximized: boolean) => void) => () => void;
       };
    }

@@ -12,6 +12,7 @@ contextBridge.exposeInMainWorld('desktop', {
    getAccounts: () => ipcRenderer.invoke('accounts:list'),
    createAccount: (account: AccountInput) => ipcRenderer.invoke('accounts:create', account),
    updateAccount: (account: AccountUpdateInput) => ipcRenderer.invoke('accounts:update', account),
+   deleteAccount: (accountID: number) => ipcRenderer.invoke('accounts:delete', accountID),
    getSettings: (): Promise<SettingsValues> => ipcRenderer.invoke('settings:get-all'),
    setSetting: (key: string, value: SettingValue): Promise<SettingsValues> =>
       ipcRenderer.invoke('settings:set', key, value),

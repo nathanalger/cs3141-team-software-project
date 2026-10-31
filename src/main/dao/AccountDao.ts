@@ -208,6 +208,17 @@ export class AccountDao extends BaseDao {
       });
    }
 
+   delete(accountID: number): void {
+      if (!Number.isInteger(accountID) || accountID < 1) {
+         throw new Error('A valid account ID is required.');
+      }
+
+      this.transaction(() => {
+         if (!this.getById(accountID)) throw new Error(`Account ${accountID} was not found.`);
+         this.db.prepare('DELETE FROM Accounts WHERE accountID = ?').run(accountID);
+      });
+   }
+
    private validate(input: AccountInput | AccountUpdateInput) {
       const smtpHost = input.smtpHost?.trim() || null;
       const smtpUser = input.smtpUser?.trim() || null;

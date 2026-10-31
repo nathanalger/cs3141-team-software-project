@@ -80,6 +80,11 @@ ipcMain.handle('accounts:update', (event, input: AccountUpdateInput) => {
    return new AccountDao().update(input);
 });
 
+ipcMain.handle('accounts:delete', (event, accountID: number) => {
+   getWindowFromEvent(event);
+   return new AccountDao().delete(accountID);
+});
+
 function createWindow() {
    const iconPath = app.isPackaged
       ? join(process.resourcesPath, 'desktop_assets', 'icon.ico')
