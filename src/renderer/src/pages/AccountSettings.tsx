@@ -10,6 +10,7 @@ import OptionSelection from '../components/OptionSelection';
 import { SETTINGS_SCHEMA } from '../../../types/settings';
 import { useLocation } from 'react-router-dom';
 import CookieButton from '../components/CookieButton';
+import AppModal from '../components/AppModal';
 
 type AccountForm = {
    fName: string;
@@ -68,6 +69,7 @@ const AccountSettings = ({ subcategoryName }: { subcategoryName?: string }) => {
    const [saving, setSaving] = useState(false);
    const [removingAccountID, setRemovingAccountID] = useState<number>();
    const [defaultingAccountID, setDefaultingAccountID] = useState<number>();
+   const [accountToRemove, setAccountToRemove] = useState<Account>();
    const [error, setError] = useState<string>();
    const [notice, setNotice] = useState<string>();
    const category = SETTINGS_SCHEMA.find((item) => item.name === 'accounts');
@@ -150,9 +152,6 @@ const AccountSettings = ({ subcategoryName }: { subcategoryName?: string }) => {
    };
 
    const removeAccount = async (account: Account) => {
-      const accountName = account.displayName || `${account.fName} ${account.lName}`;
-      if (!window.confirm(`Remove ${accountName} (${account.email}) from this device?`)) return;
-
       setRemovingAccountID(account.accountID);
       setError(undefined);
       setNotice(undefined);
@@ -161,8 +160,10 @@ const AccountSettings = ({ subcategoryName }: { subcategoryName?: string }) => {
          await window.desktop.deleteAccount(account.accountID);
          await refreshAccounts();
          setNotice('Account removed.');
+         setAccountToRemove(undefined);
       } catch (removeError) {
          setError(errorText(removeError));
+         setAccountToRemove(undefined);
       } finally {
          setRemovingAccountID(undefined);
       }
@@ -202,6 +203,35 @@ const AccountSettings = ({ subcategoryName }: { subcategoryName?: string }) => {
 
    return (
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+         <AppModal
+            open={accountToRemove !== undefined}
+            onClose={() => setAccountToRemove(undefined)}
+            title="Remove account?"
+            actions={
+               <>
+                  <Button variant="plain" onClick={() => setAccountToRemove(undefined)}>
+                     Cancel
+                  </Button>
+                  <Button
+                     color="danger"
+                     loading={removingAccountID !== undefined}
+                     disabled={!accountToRemove}
+                     onClick={() => {
+                        if (accountToRemove) void removeAccount(accountToRemove);
+                     }}
+                  >
+                     Remove account
+                  </Button>
+               </>
+            }
+         >
+            {accountToRemove && (
+               <Typography>
+                  Remove {accountToRemove.displayName || `${accountToRemove.fName} ${accountToRemove.lName}`} (
+                  {accountToRemove.email}) from this device?
+               </Typography>
+            )}
+         </AppModal>
          {error && <Alert color="danger">{error}</Alert>}
          {notice && <Alert color="success">{notice}</Alert>}
 
@@ -414,7 +444,7 @@ const AccountSettings = ({ subcategoryName }: { subcategoryName?: string }) => {
                                     </CookieButton>
                                     <CookieButton
                                        color="danger"
-                                       onClick={() => void removeAccount(account)}
+                                       onClick={() => setAccountToRemove(account)}
                                        icon={<Delete />}
                                        disabled={removingAccountID !== undefined || defaultingAccountID !== undefined}
                                     >
