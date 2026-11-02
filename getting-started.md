@@ -191,3 +191,44 @@ environment take precedence over values in the file.
 - Do not put mail-server passwords in renderer code or shared frontend types.
 - Keep local credentials in the ignored `.env` file or an approved local secrets mechanism.
 - If a connection fails, check the hostname, port, credentials, network access, and the server's TLS requirements.
+## Sending and fetching email (SCRUM-34 / SCRUM-33)
+
+The Inbox now retrieves real messages from the configured IMAP mailbox and includes a
+basic compose form that sends through the configured SMTP account.
+
+### Configuration
+
+Set these variables in the ignored root `.env` file (see `.env.example`):
+
+- `IMAP_HOST`, `IMAP_PORT` (normally `993`), `IMAP_USER`, `IMAP_PASSWORD`
+- `IMAP_MAILBOX` (optional; defaults to `INBOX`)
+- `SMTP_HOST`, `SMTP_PORT` (`465` for implicit TLS or another port supporting STARTTLS),
+  `SMTP_USER`, `SMTP_PASSWORD`
+- `SMTP_FROM` (optional; defaults to `SMTP_USER`)
+
+IMAP always uses TLS with certificate verification. SMTP uses implicit TLS on port
+465 and requires STARTTLS on other configured ports. Do not commit `.env` or real
+credentials.
+
+### How to use
+
+1. Start the Electron app with the environment configured.
+2. Open Inbox. It fetches the newest 50 messages from `IMAP_MAILBOX` (or `INBOX`).
+3. Select **Refresh** to fetch again. Select a message to view its content.
+4. Select **Compose**, enter one or more comma- or semicolon-separated recipient
+   addresses, a subject, and a plain-text body, then select **Send email**.
+5. SMTP success displays the returned message ID. Errors are shown in the Inbox.
+
+### Implementation notes
+
+- `src/main/mail-service.ts` owns the IMAP and SMTP network operations.
+- `src/main/index.ts` validates the calling BrowserWindow and exposes the
+  `mail:fetch` and `mail:send` IPC handlers.
+- `src/preload/index.ts` exposes typed `fetchEmails` and `sendEmail` methods.
+- The renderer never receives server passwords.
+- IMAP results are serialized to plain data before crossing IPC; the renderer
+  reconstructs the `Date` and `Set` values used by the existing email components.
+- Fetching is read-only: it does not mark messages as read, delete messages, or
+  change mailbox flags. The current compose form sends plain text; rich HTML,
+  attachments, account selection, and Sent-folder synchronization are not part
+  of these two initial stories.

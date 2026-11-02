@@ -1,6 +1,6 @@
-import { contextBridge, ipcRenderer } from 'electron';
-import type { SettingValue, SettingsValues } from '../types/settings';
-import type { AccountInput, AccountUpdateInput } from '../shared/email';
+import { contextBridge, ipcRenderer } from 'electron'
+import type { SettingValue, SettingsValues } from '../types/settings'
+import type { FetchEmailsRequest, FetchedEmail, SendEmailRequest, SendEmailResult } from '../shared/email'
 
 contextBridge.exposeInMainWorld('desktop', {
    platform: process.platform,
@@ -9,6 +9,10 @@ contextBridge.exposeInMainWorld('desktop', {
    close: () => ipcRenderer.invoke('window:close'),
    isMaximized: () => ipcRenderer.invoke('window:is-maximized'),
    testMailConnections: () => ipcRenderer.invoke('mail:test-connections'),
+   sendEmail: (request: SendEmailRequest): Promise<SendEmailResult> =>
+      ipcRenderer.invoke('mail:send', request),
+   fetchEmails: (request?: FetchEmailsRequest): Promise<FetchedEmail[]> =>
+      ipcRenderer.invoke('mail:fetch', request ?? {}),
    getAccounts: () => ipcRenderer.invoke('accounts:list'),
    createAccount: (account: AccountInput) => ipcRenderer.invoke('accounts:create', account),
    updateAccount: (account: AccountUpdateInput) => ipcRenderer.invoke('accounts:update', account),

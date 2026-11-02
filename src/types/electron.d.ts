@@ -1,6 +1,6 @@
 export {};
 import type { SettingValue, SettingsValues } from './settings';
-import type { Account, AccountInput, AccountUpdateInput, MailConnectionResult } from '../shared/email';
+import type { FetchEmailsRequest, FetchedEmail, MailConnectionResult, SendEmailRequest, SendEmailResult } from '../shared/email';
 
 declare global {
    interface Window {
@@ -12,6 +12,9 @@ declare global {
          isMaximized: () => Promise<boolean>;
          getSettings: () => Promise<SettingsValues>;
          setSetting: (key: string, value: SettingValue) => Promise<SettingsValues>;
+         testMailConnections?: () => Promise<MailConnectionResult>;
+         sendEmail: (request: SendEmailRequest) => Promise<SendEmailResult>;
+         fetchEmails: (request?: FetchEmailsRequest) => Promise<FetchedEmail[]>;
          testMailConnections: () => Promise<MailConnectionResult>;
          getAccounts: () => Promise<Account[]>;
          createAccount: (account: AccountInput) => Promise<Account>;
