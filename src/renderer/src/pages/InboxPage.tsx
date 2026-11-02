@@ -8,7 +8,6 @@ import { useSettings } from '../hooks/useSettings';
 import Section from '../components/Section';
 import { getSettingKey } from '../../../types/settings';
 import PageWrapper from '../architecture/PageWrapper';
-import { Alert } from '@mui/joy';
 
 const InboxPage = () => {
    const [messages, setMessages] = useState<StoredEmail[]>([]);
