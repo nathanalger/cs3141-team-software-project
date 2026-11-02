@@ -71,6 +71,24 @@ ipcMain.handle('mail:send', async (event, request: SendEmailRequest) => {
 ipcMain.handle('mail:fetch', async (event, request: FetchEmailsRequest = {}) => {
    getWindowFromEvent(event);
    return await fetchEmails(request);
+ipcMain.handle('accounts:list', (event) => {
+   getWindowFromEvent(event);
+   return new AccountDao().list();
+});
+
+ipcMain.handle('accounts:create', (event, input: AccountInput) => {
+   getWindowFromEvent(event);
+   return new AccountDao().create(input);
+});
+
+ipcMain.handle('accounts:update', (event, input: AccountUpdateInput) => {
+   getWindowFromEvent(event);
+   return new AccountDao().update(input);
+});
+
+ipcMain.handle('accounts:delete', (event, accountID: number) => {
+   getWindowFromEvent(event);
+   return new AccountDao().delete(accountID);
 });
 
 function createWindow() {
@@ -128,6 +146,7 @@ function createWindow() {
 
 app.whenReady()
    .then(() => {
+      initializeDatabase();
       createWindow();
 
       app.on('activate', () => {
@@ -145,6 +164,7 @@ app.whenReady()
    })
    .catch((error) => {
       console.error('[main] App initialization failed:', error);
+      app.quit();
    });
 
 app.on('window-all-closed', () => {

@@ -47,6 +47,7 @@ export interface SettingsSubcategory {
    displayName: string;
    description: string;
    settings: SettingDefinition[];
+   component?: 'manual-account-form' | 'account-management-list';
 }
 
 export interface SettingsCategory {
@@ -110,6 +111,28 @@ export const SETTINGS_SCHEMA: SettingsCategory[] = [
       ],
    },
    {
+      name: 'accounts',
+      displayName: 'Accounts',
+      description: 'Add and remove email accounts.',
+      icon: 'person',
+      subcategories: [
+         {
+            name: 'add-manual',
+            displayName: 'Add manual account',
+            description: 'Connect an email account using its IMAP and SMTP server settings.',
+            settings: [],
+            component: 'manual-account-form',
+         },
+         {
+            name: 'manage-accounts',
+            displayName: 'Manage accounts',
+            description: 'Set a default account or remove a saved account from this device.',
+            settings: [],
+            component: 'account-management-list',
+         },
+      ],
+   },
+   {
       name: 'debug',
       displayName: 'Debug',
       description: 'Run diagnostic checks for development and troubleshooting.',
@@ -124,7 +147,7 @@ export const SETTINGS_SCHEMA: SettingsCategory[] = [
                   name: 'test-mail-connections',
                   displayName: 'Mail server connections',
                   description:
-                     'Test authenticated TLS connections to the configured IMAP and SMTP test servers. This checks connectivity only; it does not send an email.',
+                     'Test connections for saved accounts. This checks connectivity only; it does not send an email.',
                   type: 'debug-button',
                   buttonLabel: 'Test IMAP and SMTP connections',
                   action: async () => {

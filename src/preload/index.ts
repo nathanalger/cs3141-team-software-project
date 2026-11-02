@@ -13,13 +13,17 @@ contextBridge.exposeInMainWorld('desktop', {
       ipcRenderer.invoke('mail:send', request),
    fetchEmails: (request?: FetchEmailsRequest): Promise<FetchedEmail[]> =>
       ipcRenderer.invoke('mail:fetch', request ?? {}),
+   getAccounts: () => ipcRenderer.invoke('accounts:list'),
+   createAccount: (account: AccountInput) => ipcRenderer.invoke('accounts:create', account),
+   updateAccount: (account: AccountUpdateInput) => ipcRenderer.invoke('accounts:update', account),
+   deleteAccount: (accountID: number) => ipcRenderer.invoke('accounts:delete', accountID),
    getSettings: (): Promise<SettingsValues> => ipcRenderer.invoke('settings:get-all'),
    setSetting: (key: string, value: SettingValue): Promise<SettingsValues> =>
       ipcRenderer.invoke('settings:set', key, value),
    onMaximizeChange: (callback: (isMaximized: boolean) => void) => {
-      const listener = (_event: Electron.IpcRendererEvent, isMaximized: boolean) => callback(isMaximized)
-      ipcRenderer.on('window:maximize-change', listener)
+      const listener = (_event: Electron.IpcRendererEvent, isMaximized: boolean) => callback(isMaximized);
+      ipcRenderer.on('window:maximize-change', listener);
 
-      return () => ipcRenderer.removeListener('window:maximize-change', listener)
+      return () => ipcRenderer.removeListener('window:maximize-change', listener);
    },
-})
+});

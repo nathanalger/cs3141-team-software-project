@@ -15,6 +15,11 @@ declare global {
          testMailConnections?: () => Promise<MailConnectionResult>;
          sendEmail: (request: SendEmailRequest) => Promise<SendEmailResult>;
          fetchEmails: (request?: FetchEmailsRequest) => Promise<FetchedEmail[]>;
+         testMailConnections: () => Promise<MailConnectionResult>;
+         getAccounts: () => Promise<Account[]>;
+         createAccount: (account: AccountInput) => Promise<Account>;
+         updateAccount: (account: AccountUpdateInput) => Promise<Account>;
+         deleteAccount: (accountID: number) => Promise<void>;
          onMaximizeChange: (callback: (isMaximized: boolean) => void) => () => void;
       };
    }

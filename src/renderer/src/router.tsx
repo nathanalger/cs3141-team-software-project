@@ -18,6 +18,7 @@ export const router = createMemoryRouter([
       element: <MainWrapper />,
       children: [
          { index: true, element: <Navigate to="/settings" replace /> },
+         { path: 'accounts', element: <Navigate to="/settings/accounts#add-manual" replace /> },
          {
             path: 'inbox',
             element: <Outlet />,
