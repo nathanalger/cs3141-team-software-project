@@ -14,6 +14,7 @@
       },
       "client": "electron-vite dev",
       "build": "electron-vite build",
+      "typecheck": "tsc --noEmit -p tsconfig.app.json && tsc --noEmit -p tsconfig.node.json",
       "preview": "electron-vite preview",
       "package": "deno task build && electron-builder",
       "test": "vitest run",

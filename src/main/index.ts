@@ -75,11 +75,6 @@ ipcMain.handle('mail:send-email', async (event, request: SendEmailRequest) => {
    return await sendEmail(request);
 });
 
-
-ipcMain.handle('mail:fetch', async (event, request: FetchEmailsRequest = {}) => {
-   getWindowFromEvent(event);
-   return await fetchEmails(request);
-});
 ipcMain.handle('accounts:list', (event) => {
    getWindowFromEvent(event);
    return new AccountDao().list();
