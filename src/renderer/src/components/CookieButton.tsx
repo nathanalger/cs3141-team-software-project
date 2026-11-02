@@ -14,20 +14,23 @@ const CookieButton = ({
    sx,
    icon,
    color,
+   disabled,
    onClick,
 }: {
    children?: ReactNode;
    sx?: SxProps;
    icon?: ReactNode;
    color?: ColorPaletteProp & ButtonPropsColorOverrides;
+   disabled?: boolean;
    onClick?: MouseEventHandler<HTMLButtonElement>;
 }) => {
    return (
       <Button
+         disabled={disabled}
          startDecorator={icon}
          variant="outlined"
          onClick={onClick}
-         color={color}
+         color={disabled ? 'neutral' : color}
          sx={{
             ...CookieButtonSx,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any

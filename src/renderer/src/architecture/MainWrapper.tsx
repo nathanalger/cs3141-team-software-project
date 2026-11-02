@@ -16,7 +16,7 @@ const MainWrapperSx = {
    p: 2,
    m: 0,
    flex: 1,
-   height: '100%',
+   minHeight: 0,
    bgcolor: (t) => t.palette.background.body,
    borderLeft: (t) => `2px solid ${t.palette.divider}`,
    borderTop: (t) => `2px solid ${t.palette.divider}`,
@@ -44,6 +44,7 @@ const MainWrapper = () => {
             display: 'flex',
             flexDirection: 'column',
             height: '100vh',
+            overflow: 'hidden',
          }}
       >
          {/* Top Nav Bar, could theoretically be top bar */}
@@ -51,7 +52,8 @@ const MainWrapper = () => {
             sx={{
                bgcolor: (t) => t.palette.background.surface,
                display: 'flex',
-               height: NAV_THICKNESS,
+               flex: `0 0 ${NAV_THICKNESS}px`,
+               minHeight: NAV_THICKNESS,
                WebkitAppRegion: 'drag',
             }}
          >
@@ -143,12 +145,14 @@ const MainWrapper = () => {
                bgcolor: (t) => t.palette.background.surface,
                display: 'flex',
                flexDirection: 'row',
-               height: '100%',
+               flex: 1,
+               minHeight: 0,
+               overflow: 'hidden',
             }}
          >
             {/* Left Bar */}
             <FunctionBar />
-            <Box sx={{ ...MainWrapperSx, minWidth: 0 }}>
+            <Box sx={{ ...MainWrapperSx, minWidth: 0, overflowY: 'auto' }}>
                <ErrorCatch>
                   <Outlet />
                </ErrorCatch>
