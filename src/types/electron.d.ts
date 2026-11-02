@@ -1,6 +1,15 @@
 export {};
 import type { SettingValue, SettingsValues } from './settings';
-import type { Account, AccountInput, AccountUpdateInput, MailConnectionResult } from '../shared/email';
+import type {
+   Account,
+   AccountInput,
+   AccountUpdateInput,
+   FetchEmailsRequest,
+   MailConnectionResult,
+   SendEmailRequest,
+   SendEmailResult,
+} from '../shared/email';
+import type { StoredEmail } from './email';
 
 declare global {
    interface Window {
@@ -13,6 +22,8 @@ declare global {
          getSettings: () => Promise<SettingsValues>;
          setSetting: (key: string, value: SettingValue) => Promise<SettingsValues>;
          testMailConnections: () => Promise<MailConnectionResult>;
+         fetchEmails: (request: FetchEmailsRequest) => Promise<StoredEmail[]>;
+         sendEmail: (request: SendEmailRequest) => Promise<SendEmailResult>;
          getAccounts: () => Promise<Account[]>;
          createAccount: (account: AccountInput) => Promise<Account>;
          updateAccount: (account: AccountUpdateInput) => Promise<Account>;

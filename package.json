@@ -16,6 +16,7 @@
       "@mui/joy": "5.0.0-beta.52",
       "dotenv": "^18.0.9",
       "imapflow": "^1.7.8",
+      "mailparser": "^3.14.1",
       "nodemailer": "^6.10.1",
       "react": "^19.2.8",
       "react-dom": "^19.2.8",
