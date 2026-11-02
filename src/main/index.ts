@@ -3,7 +3,8 @@ import { app, BrowserWindow, ipcMain, Menu, nativeTheme, type IpcMainInvokeEvent
 import { join } from 'node:path';
 import * as config from '../config';
 import { readSettings, writeSetting } from './settings';
-import { testMailConnections } from './mail-service';
+import { fetchEmails, sendEmail, testMailConnections } from './mail-service';
+import type { FetchEmailsRequest, SendEmailRequest } from '../shared/email';
 
 app.on('render-process-gone', (_event, _webContents, details) => {
    console.error('[main] Renderer process gone:', details);
@@ -61,6 +62,16 @@ ipcMain.handle('mail:test-connections', async (event) => {
    getWindowFromEvent(event);
    return await testMailConnections();
 })
+
+ipcMain.handle('mail:send', async (event, request: SendEmailRequest) => {
+   getWindowFromEvent(event);
+   return await sendEmail(request);
+});
+
+ipcMain.handle('mail:fetch', async (event, request: FetchEmailsRequest = {}) => {
+   getWindowFromEvent(event);
+   return await fetchEmails(request);
+});
 
 function createWindow() {
    const iconPath = app.isPackaged

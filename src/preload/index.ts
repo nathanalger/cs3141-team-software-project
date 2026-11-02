@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import type { SettingValue, SettingsValues } from '../types/settings'
+import type { FetchEmailsRequest, FetchedEmail, SendEmailRequest, SendEmailResult } from '../shared/email'
 
 contextBridge.exposeInMainWorld('desktop', {
    platform: process.platform,
@@ -8,6 +9,10 @@ contextBridge.exposeInMainWorld('desktop', {
    close: () => ipcRenderer.invoke('window:close'),
    isMaximized: () => ipcRenderer.invoke('window:is-maximized'),
    testMailConnections: () => ipcRenderer.invoke('mail:test-connections'),
+   sendEmail: (request: SendEmailRequest): Promise<SendEmailResult> =>
+      ipcRenderer.invoke('mail:send', request),
+   fetchEmails: (request?: FetchEmailsRequest): Promise<FetchedEmail[]> =>
+      ipcRenderer.invoke('mail:fetch', request ?? {}),
    getSettings: (): Promise<SettingsValues> => ipcRenderer.invoke('settings:get-all'),
    setSetting: (key: string, value: SettingValue): Promise<SettingsValues> =>
       ipcRenderer.invoke('settings:set', key, value),
