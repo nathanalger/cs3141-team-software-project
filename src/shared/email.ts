@@ -103,3 +103,48 @@ export interface Email {
    isRead: boolean;
    isFlagged: boolean;
 }
+
+export interface SendEmailRequest {
+   to: EmailAddress[];
+   cc?: EmailAddress[];
+   bcc?: EmailAddress[];
+   subject: string;
+   text: string;
+   html?: string;
+}
+
+export interface FetchEmailsRequest {
+   mailbox?: string;
+   limit?: number;
+}
+
+export interface ParsedEmailMessage {
+   id: string;
+   messageId?: string;
+   from: EmailAddress[];
+   to: EmailAddress[];
+   cc: EmailAddress[];
+   bcc: EmailAddress[];
+   replyTo: EmailAddress[];
+   subject: string;
+   text?: string;
+   html?: string;
+   date?: Date;
+   inReplyTo?: string;
+   references: string[];
+}
+
+export interface FetchedEmail {
+   message: ParsedEmailMessage;
+   mailbox: string;
+   uid: number;
+   uidValidity: number;
+   flags: string[];
+   internalDate?: string;
+   size?: number;
+}
+
+export interface SendEmailResult {
+   accepted: string[];
+   messageId: string;
+}

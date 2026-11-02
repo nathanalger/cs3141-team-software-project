@@ -21,6 +21,9 @@ declare global {
          isMaximized: () => Promise<boolean>;
          getSettings: () => Promise<SettingsValues>;
          setSetting: (key: string, value: SettingValue) => Promise<SettingsValues>;
+         testMailConnections?: () => Promise<MailConnectionResult>;
+         sendEmail: (request: SendEmailRequest) => Promise<SendEmailResult>;
+         fetchEmails: (request?: FetchEmailsRequest) => Promise<FetchedEmail[]>;
          testMailConnections: () => Promise<MailConnectionResult>;
          fetchEmails: (request: FetchEmailsRequest) => Promise<StoredEmail[]>;
          sendEmail: (request: SendEmailRequest) => Promise<SendEmailResult>;

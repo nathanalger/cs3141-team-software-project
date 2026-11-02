@@ -1,6 +1,6 @@
 import { contextBridge, ipcRenderer } from 'electron';
 import type { SettingValue, SettingsValues } from '../types/settings';
-import type { AccountInput, AccountUpdateInput, FetchEmailsRequest, SendEmailRequest } from '../shared/email';
+import type { AccountInput, AccountUpdateInput, FetchEmailsRequest, FetchedEmail, SendEmailRequest, SendEmailResult } from '../shared/email'
 
 contextBridge.exposeInMainWorld('desktop', {
    platform: process.platform,
@@ -11,6 +11,8 @@ contextBridge.exposeInMainWorld('desktop', {
    testMailConnections: () => ipcRenderer.invoke('mail:test-connections'),
    fetchEmails: (request: FetchEmailsRequest) => ipcRenderer.invoke('mail:fetch-emails', request),
    sendEmail: (request: SendEmailRequest) => ipcRenderer.invoke('mail:send-email', request),
+   fetchEmails: (request?: FetchEmailsRequest): Promise<FetchedEmail[]> =>
+      ipcRenderer.invoke('mail:fetch', request ?? {}),
    getAccounts: () => ipcRenderer.invoke('accounts:list'),
    createAccount: (account: AccountInput) => ipcRenderer.invoke('accounts:create', account),
    updateAccount: (account: AccountUpdateInput) => ipcRenderer.invoke('accounts:update', account),

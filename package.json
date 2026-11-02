@@ -73,5 +73,16 @@
       "linux": {
          "target": "AppImage"
       }
-   }
+    ],
+    "win": {
+      "icon": "src/main/desktop_assets/icon.ico",
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
+  }
 }
