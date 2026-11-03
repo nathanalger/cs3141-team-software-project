@@ -106,6 +106,30 @@ export class AccountDao extends BaseDao {
       }));
    }
 
+   getForMailOperations(accountID?: number): AccountCredentials {
+      if (accountID !== undefined && (!Number.isInteger(accountID) || accountID < 1)) {
+         throw new Error('A valid account ID is required.');
+      }
+
+      const row = this.db
+         .prepare(`
+            SELECT ${ACCOUNT_COLUMNS}, imapPassword, smtpPassword
+            FROM Accounts
+            ${accountID === undefined ? 'ORDER BY isDefault DESC, accountID LIMIT 1' : 'WHERE accountID = ?'}
+         `)
+         .get(...(accountID === undefined ? [] : [accountID])) as AccountRow | undefined;
+
+      if (!row) {
+         throw new Error(accountID === undefined ? 'No email accounts are configured.' : `Account ${accountID} was not found.`);
+      }
+
+      return {
+         ...mapAccount(row),
+         imapPassword: decryptPassword(row.imapPassword),
+         ...(row.smtpPassword ? { smtpPassword: decryptPassword(row.smtpPassword) } : {}),
+      };
+   }
+
    create(input: AccountInput): Account {
       if (!input.imapPassword) throw new Error('An IMAP password is required.');
       const data = this.validate(input);

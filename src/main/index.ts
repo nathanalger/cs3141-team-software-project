@@ -4,7 +4,9 @@ import { join } from 'node:path';
 import * as config from '../config';
 import { readSettings, writeSetting } from './settings';
 import { fetchEmails, sendEmail, testMailConnections } from './mail-service';
-import type { FetchEmailsRequest, SendEmailRequest } from '../shared/email';
+import { init as initializeDatabase } from './db';
+import { AccountDao } from './dao/AccountDao';
+import type { AccountInput, AccountUpdateInput, FetchEmailsRequest, SendEmailRequest } from '../shared/email';
 
 app.on('render-process-gone', (_event, _webContents, details) => {
    console.error('[main] Renderer process gone:', details);
@@ -63,14 +65,16 @@ ipcMain.handle('mail:test-connections', async (event) => {
    return await testMailConnections();
 })
 
-ipcMain.handle('mail:send', async (event, request: SendEmailRequest) => {
+ipcMain.handle('mail:fetch-emails', async (event, request: FetchEmailsRequest) => {
+   getWindowFromEvent(event);
+   return await fetchEmails(request);
+});
+
+ipcMain.handle('mail:send-email', async (event, request: SendEmailRequest) => {
    getWindowFromEvent(event);
    return await sendEmail(request);
 });
 
-ipcMain.handle('mail:fetch', async (event, request: FetchEmailsRequest = {}) => {
-   getWindowFromEvent(event);
-   return await fetchEmails(request);
 ipcMain.handle('accounts:list', (event) => {
    getWindowFromEvent(event);
    return new AccountDao().list();

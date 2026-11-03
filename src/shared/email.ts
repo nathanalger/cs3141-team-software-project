@@ -63,6 +63,26 @@ export interface MailConnectionResult {
    results: MailConnectionStatus[];
 }
 
+export interface FetchEmailsRequest {
+   accountID?: number;
+   mailbox?: string;
+   limit?: number;
+}
+
+export interface SendEmailRequest {
+   accountID?: number;
+   to: EmailAddress[];
+   cc?: EmailAddress[];
+   bcc?: EmailAddress[];
+   subject: string;
+   text: string;
+   html?: string;
+}
+
+export interface SendEmailResult {
+   messageId: string;
+}
+
 /** @deprecated Use Account instead. */
 export type UserAccount = Account;
 
@@ -82,49 +102,4 @@ export interface Email {
    hasAttachments: boolean;
    isRead: boolean;
    isFlagged: boolean;
-}
-
-export interface SendEmailRequest {
-   to: EmailAddress[];
-   cc?: EmailAddress[];
-   bcc?: EmailAddress[];
-   subject: string;
-   text: string;
-   html?: string;
-}
-
-export interface FetchEmailsRequest {
-   mailbox?: string;
-   limit?: number;
-}
-
-export interface ParsedEmailMessage {
-   id: string;
-   messageId?: string;
-   from: EmailAddress[];
-   to: EmailAddress[];
-   cc: EmailAddress[];
-   bcc: EmailAddress[];
-   replyTo: EmailAddress[];
-   subject: string;
-   text?: string;
-   html?: string;
-   date?: Date;
-   inReplyTo?: string;
-   references: string[];
-}
-
-export interface FetchedEmail {
-   message: ParsedEmailMessage;
-   mailbox: string;
-   uid: number;
-   uidValidity: number;
-   flags: string[];
-   internalDate?: string;
-   size?: number;
-}
-
-export interface SendEmailResult {
-   accepted: string[];
-   messageId: string;
 }

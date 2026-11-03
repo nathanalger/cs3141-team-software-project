@@ -1,6 +1,13 @@
-import { contextBridge, ipcRenderer } from 'electron'
-import type { SettingValue, SettingsValues } from '../types/settings'
-import type { FetchEmailsRequest, FetchedEmail, SendEmailRequest, SendEmailResult } from '../shared/email'
+import { contextBridge, ipcRenderer } from 'electron';
+import type { SettingValue, SettingsValues } from '../types/settings';
+import type {
+   AccountInput,
+   AccountUpdateInput,
+   FetchEmailsRequest,
+   SendEmailRequest,
+   SendEmailResult,
+} from '../shared/email';
+import type { StoredEmail } from '../types/email';
 
 contextBridge.exposeInMainWorld('desktop', {
    platform: process.platform,
@@ -9,10 +16,10 @@ contextBridge.exposeInMainWorld('desktop', {
    close: () => ipcRenderer.invoke('window:close'),
    isMaximized: () => ipcRenderer.invoke('window:is-maximized'),
    testMailConnections: () => ipcRenderer.invoke('mail:test-connections'),
+   fetchEmails: (request?: FetchEmailsRequest): Promise<StoredEmail[]> =>
+      ipcRenderer.invoke('mail:fetch-emails', request ?? {}),
    sendEmail: (request: SendEmailRequest): Promise<SendEmailResult> =>
-      ipcRenderer.invoke('mail:send', request),
-   fetchEmails: (request?: FetchEmailsRequest): Promise<FetchedEmail[]> =>
-      ipcRenderer.invoke('mail:fetch', request ?? {}),
+      ipcRenderer.invoke('mail:send-email', request),
    getAccounts: () => ipcRenderer.invoke('accounts:list'),
    createAccount: (account: AccountInput) => ipcRenderer.invoke('accounts:create', account),
    updateAccount: (account: AccountUpdateInput) => ipcRenderer.invoke('accounts:update', account),
