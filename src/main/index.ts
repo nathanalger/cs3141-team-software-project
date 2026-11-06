@@ -3,8 +3,10 @@ import { app, BrowserWindow, ipcMain, Menu, nativeTheme, type IpcMainInvokeEvent
 import { join } from 'node:path';
 import * as config from '../config';
 import { readSettings, writeSetting } from './settings';
-import { fetchEmails, sendEmail, testMailConnections } from './mail-service';
-import type { FetchEmailsRequest, SendEmailRequest } from '../shared/email';
+import { fetchEmails, listMailboxes, sendEmail, testMailConnections } from './mail-service';
+import { init as initializeDatabase } from './db';
+import { AccountDao } from './dao/AccountDao';
+import type { AccountInput, AccountUpdateInput, FetchEmailsRequest, SendEmailRequest } from '../shared/email';
 
 app.on('render-process-gone', (_event, _webContents, details) => {
    console.error('[main] Renderer process gone:', details);
@@ -63,14 +65,39 @@ ipcMain.handle('mail:test-connections', async (event) => {
    return await testMailConnections();
 })
 
-ipcMain.handle('mail:send', async (event, request: SendEmailRequest) => {
+ipcMain.handle('mail:list-mailboxes', async (event, accountID?: number) => {
+   getWindowFromEvent(event);
+   return await listMailboxes(accountID);
+});
+
+ipcMain.handle('mail:fetch-emails', async (event, request: FetchEmailsRequest) => {
+   getWindowFromEvent(event);
+   return await fetchEmails(request);
+});
+
+ipcMain.handle('mail:send-email', async (event, request: SendEmailRequest) => {
    getWindowFromEvent(event);
    return await sendEmail(request);
 });
 
-ipcMain.handle('mail:fetch', async (event, request: FetchEmailsRequest = {}) => {
+ipcMain.handle('accounts:list', (event) => {
    getWindowFromEvent(event);
-   return await fetchEmails(request);
+   return new AccountDao().list();
+});
+
+ipcMain.handle('accounts:create', (event, input: AccountInput) => {
+   getWindowFromEvent(event);
+   return new AccountDao().create(input);
+});
+
+ipcMain.handle('accounts:update', (event, input: AccountUpdateInput) => {
+   getWindowFromEvent(event);
+   return new AccountDao().update(input);
+});
+
+ipcMain.handle('accounts:delete', (event, accountID: number) => {
+   getWindowFromEvent(event);
+   return new AccountDao().delete(accountID);
 });
 
 function createWindow() {
@@ -128,6 +155,7 @@ function createWindow() {
 
 app.whenReady()
    .then(() => {
+      initializeDatabase();
       createWindow();
 
       app.on('activate', () => {
@@ -145,6 +173,7 @@ app.whenReady()
    })
    .catch((error) => {
       console.error('[main] App initialization failed:', error);
+      app.quit();
    });
 
 app.on('window-all-closed', () => {

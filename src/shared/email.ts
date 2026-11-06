@@ -5,7 +5,7 @@ export interface EmailAddress {
 
 export type MailSecurity = 'tls' | 'starttls' | 'none';
 
-export interface UserAccount {
+export interface Account {
    accountID: number;
    fName: string;
    lName: string;
@@ -15,7 +15,7 @@ export interface UserAccount {
    imapPort: number;
    imapSecurity: MailSecurity;
    imapUser?: string;
-   smtpHost: string;
+   smtpHost?: string;
    smtpPort: number;
    smtpSecurity: MailSecurity;
    smtpUser?: string;
@@ -23,16 +23,75 @@ export interface UserAccount {
    createdAt?: string;
 }
 
+export interface AccountInput {
+   fName: string;
+   lName: string;
+   displayName?: string;
+   email: string;
+   imapHost: string;
+   imapPort: number;
+   imapSecurity: MailSecurity;
+   imapUser: string;
+   imapPassword: string;
+   smtpHost?: string;
+   smtpPort?: number;
+   smtpSecurity?: MailSecurity;
+   smtpUser?: string;
+   smtpPassword?: string;
+   isDefault?: boolean;
+}
+
+export interface AccountUpdateInput extends Omit<AccountInput, 'imapPassword'> {
+   accountID: number;
+   imapPassword?: string;
+}
+
+export interface AccountCredentials extends Account {
+   imapPassword: string;
+   smtpPassword?: string;
+}
+
 export interface MailConnectionStatus {
    service: 'IMAP' | 'SMTP';
    success: boolean;
    message: string;
+   accountEmail?: string;
 }
 
 export interface MailConnectionResult {
    success: boolean;
    results: MailConnectionStatus[];
 }
+
+export interface MailboxInfo {
+   path: string;
+   name: string;
+   delimiter: string;
+   specialUse?: string;
+   flags: string[];
+}
+
+export interface FetchEmailsRequest {
+   accountID?: number;
+   mailbox?: string;
+   limit?: number;
+}
+
+export interface SendEmailRequest {
+   accountID?: number;
+   to: EmailAddress[];
+   cc?: EmailAddress[];
+   bcc?: EmailAddress[];
+   subject: string;
+   text: string;
+   html?: string;
+}
+
+export interface SendEmailResult {
+   messageId: string;
+}
+
+export type UserAccount = Account;
 
 export interface Email {
    id: string;
@@ -50,49 +109,4 @@ export interface Email {
    hasAttachments: boolean;
    isRead: boolean;
    isFlagged: boolean;
-}
-
-export interface SendEmailRequest {
-   to: EmailAddress[];
-   cc?: EmailAddress[];
-   bcc?: EmailAddress[];
-   subject: string;
-   text: string;
-   html?: string;
-}
-
-export interface FetchEmailsRequest {
-   mailbox?: string;
-   limit?: number;
-}
-
-export interface ParsedEmailMessage {
-   id: string;
-   messageId?: string;
-   from: EmailAddress[];
-   to: EmailAddress[];
-   cc: EmailAddress[];
-   bcc: EmailAddress[];
-   replyTo: EmailAddress[];
-   subject: string;
-   text?: string;
-   html?: string;
-   date?: Date;
-   inReplyTo?: string;
-   references: string[];
-}
-
-export interface FetchedEmail {
-   message: ParsedEmailMessage;
-   mailbox: string;
-   uid: number;
-   uidValidity: number;
-   flags: string[];
-   internalDate?: string;
-   size?: number;
-}
-
-export interface SendEmailResult {
-   accepted: string[];
-   messageId: string;
 }

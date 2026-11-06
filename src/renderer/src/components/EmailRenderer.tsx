@@ -41,7 +41,7 @@ const EmailRenderer = ({ email, onBack }: { email: StoredEmail; onBack: () => vo
             variant="plain"
             startDecorator={<ArrowBack />}
          >
-            Back to inbox
+            Back to folder
          </Button>
 
          <Typography level="h2">{message.subject || '(No subject)'}</Typography>
