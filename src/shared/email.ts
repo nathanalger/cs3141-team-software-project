@@ -91,6 +91,7 @@ export interface SendEmailResult {
    messageId: string;
 }
 
+/** @deprecated Use Account instead. */
 export type UserAccount = Account;
 
 export interface Email {

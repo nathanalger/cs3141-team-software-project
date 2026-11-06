@@ -68,9 +68,7 @@ ipcMain.handle('mail:test-connections', async (event) => {
 ipcMain.handle('mail:list-mailboxes', async (event, accountID?: number) => {
    getWindowFromEvent(event);
    return await listMailboxes(accountID);
-});
-
-ipcMain.handle('mail:fetch-emails', async (event, request: FetchEmailsRequest) => {
+});ipcMain.handle('mail:fetch-emails', async (event, request: FetchEmailsRequest) => {
    getWindowFromEvent(event);
    return await fetchEmails(request);
 });
