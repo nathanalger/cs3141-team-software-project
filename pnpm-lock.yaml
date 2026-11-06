@@ -188,7 +188,7 @@ importers:
         specifier: ^1.7.8
         version: 1.7.8
       mailparser:
-        specifier: ^3.14.1
+        specifier: 3.14.1
         version: 3.14.1
       nodemailer:
         specifier: ^6.10.1

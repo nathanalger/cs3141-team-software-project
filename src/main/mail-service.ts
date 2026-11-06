@@ -7,6 +7,7 @@ import type {
    FetchEmailsRequest,
    MailConnectionResult,
    MailConnectionStatus,
+   MailboxInfo,
    SendEmailRequest,
    SendEmailResult,
 } from '../shared/email';
@@ -112,7 +113,28 @@ function toEmailMessage(parsed: Awaited<ReturnType<typeof simpleParser>>, uid: n
    };
 }
 
-/** Fetches the newest messages from the selected account's mailbox. */
+export async function listMailboxes(accountID?: number): Promise<MailboxInfo[]> {
+   const account = new AccountDao().getForMailOperations(accountID);
+   if (!account.imapPassword) throw new Error(`No IMAP password is stored for ${account.email}.`);
+
+   const client = createImapClient(account);
+   let connected = false;
+   try {
+      await client.connect();
+      connected = true;
+      const mailboxes = await client.list();
+      return mailboxes.map((mailbox) => ({
+         path: mailbox.path,
+         name: mailbox.name,
+         delimiter: typeof mailbox.delimiter === 'string' ? mailbox.delimiter : '/',
+         ...(mailbox.specialUse ? { specialUse: mailbox.specialUse } : {}),
+         flags: [...mailbox.flags],
+      }));
+   } finally {
+      if (connected) await client.logout();
+   }
+}
+
 export async function fetchEmails(request: FetchEmailsRequest = {}): Promise<StoredEmail[]> {
    const account = new AccountDao().getForMailOperations(request.accountID);
    if (!account.imapPassword) throw new Error(`No IMAP password is stored for ${account.email}.`);
@@ -168,7 +190,6 @@ export async function fetchEmails(request: FetchEmailsRequest = {}): Promise<Sto
    }
 }
 
-/** Sends an email with the selected account's stored SMTP configuration. */
 export async function sendEmail(request: SendEmailRequest): Promise<SendEmailResult> {
    if (!request || !Array.isArray(request.to) || request.to.length === 0 ||
       (request.cc !== undefined && !Array.isArray(request.cc)) ||
@@ -280,7 +301,6 @@ async function testSmtpConnection(account: AccountCredentials): Promise<MailConn
    }
 }
 
-/** Tests stored account connections without exposing credentials to the renderer. */
 export async function testMailConnections(): Promise<MailConnectionResult> {
    const accounts = new AccountDao().getForConnectionTests();
    if (!accounts.length) {

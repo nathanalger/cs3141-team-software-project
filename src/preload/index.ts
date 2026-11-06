@@ -4,6 +4,7 @@ import type {
    AccountInput,
    AccountUpdateInput,
    FetchEmailsRequest,
+   MailboxInfo,
    SendEmailRequest,
    SendEmailResult,
 } from '../shared/email';
@@ -16,6 +17,8 @@ contextBridge.exposeInMainWorld('desktop', {
    close: () => ipcRenderer.invoke('window:close'),
    isMaximized: () => ipcRenderer.invoke('window:is-maximized'),
    testMailConnections: () => ipcRenderer.invoke('mail:test-connections'),
+   listMailboxes: (accountID?: number): Promise<MailboxInfo[]> =>
+      ipcRenderer.invoke('mail:list-mailboxes', accountID),
    fetchEmails: (request?: FetchEmailsRequest): Promise<StoredEmail[]> =>
       ipcRenderer.invoke('mail:fetch-emails', request ?? {}),
    sendEmail: (request: SendEmailRequest): Promise<SendEmailResult> =>

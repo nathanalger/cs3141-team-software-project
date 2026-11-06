@@ -63,6 +63,14 @@ export interface MailConnectionResult {
    results: MailConnectionStatus[];
 }
 
+export interface MailboxInfo {
+   path: string;
+   name: string;
+   delimiter: string;
+   specialUse?: string;
+   flags: string[];
+}
+
 export interface FetchEmailsRequest {
    accountID?: number;
    mailbox?: string;

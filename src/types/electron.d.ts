@@ -5,6 +5,7 @@ import type {
    AccountInput,
    AccountUpdateInput,
    FetchEmailsRequest,
+   MailboxInfo,
    MailConnectionResult,
    SendEmailRequest,
    SendEmailResult,
@@ -22,6 +23,7 @@ declare global {
          getSettings: () => Promise<SettingsValues>;
          setSetting: (key: string, value: SettingValue) => Promise<SettingsValues>;
          testMailConnections: () => Promise<MailConnectionResult>;
+         listMailboxes: (accountID?: number) => Promise<MailboxInfo[]>;
          fetchEmails: (request?: FetchEmailsRequest) => Promise<StoredEmail[]>;
          sendEmail: (request: SendEmailRequest) => Promise<SendEmailResult>;
          getAccounts: () => Promise<Account[]>;
