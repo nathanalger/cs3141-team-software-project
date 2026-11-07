@@ -10,9 +10,6 @@ const truncateSx = {
    minWidth: 0,
 } as SxProps;
 
-/**
- * TODO: messages: Message list should be controlled inside this element. For now though, we are using a sample generator.
- */
 const EmailGrid = ({
    messages = [],
    onClick,
@@ -127,7 +124,6 @@ const EmailGrid = ({
             </Box>
          ))}
          {
-            // TODO: Replace inbox name with actual name of inbox
             messages.length == 0 && (
                <Box
                   sx={{
@@ -137,7 +133,7 @@ const EmailGrid = ({
                      textAlign: 'center',
                   }}
                >
-                  <Typography>Your inbox is empty!</Typography>
+                  <Typography>This folder is empty!</Typography>
                </Box>
             )
          }
