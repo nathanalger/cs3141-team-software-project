@@ -22,7 +22,7 @@ function errorMessage(error: unknown): string {
 }
 
 function createImapClient(account: AccountCredentials): ImapFlow {
-   return new ImapFlow({
+   const client = new ImapFlow({
       host: account.imapHost,
       port: account.imapPort,
       secure: account.imapSecurity === 'tls',
@@ -37,6 +37,10 @@ function createImapClient(account: AccountCredentials): ImapFlow {
       socketTimeout: CONNECTION_TIMEOUT_MS,
       logger: false,
    });
+   client.on('error', (error) => {
+      console.error('[mail] IMAP connection error:', error);
+   });
+   return client;
 }
 
 async function testImapConnection(account: AccountCredentials): Promise<MailConnectionStatus> {
@@ -66,11 +70,15 @@ async function testImapConnection(account: AccountCredentials): Promise<MailConn
    } catch (error) {
       return { service: 'IMAP', accountEmail: account.email, success: false, message: errorMessage(error) };
    } finally {
-      if (client && connected) {
+      if (client) {
          try {
-            await client.logout();
+            if (connected) {
+               await client.logout();
+            }
          } catch {
             // Logout errors do not change the result of the completed connection test.
+         } finally {
+            client.close();
          }
       }
    }
@@ -131,7 +139,11 @@ export async function listMailboxes(accountID?: number): Promise<MailboxInfo[]> 
          flags: [...mailbox.flags],
       }));
    } finally {
-      if (connected) await client.logout();
+      try {
+         if (connected) await client.logout();
+      } finally {
+         client.close();
+      }
    }
 }
 
@@ -186,7 +198,11 @@ export async function fetchEmails(request: FetchEmailsRequest = {}): Promise<Sto
          lock.release();
       }
    } finally {
-      if (connected) await client.logout();
+      try {
+         if (connected) await client.logout();
+      } finally {
+         client.close();
+      }
    }
 }
 
