@@ -13,6 +13,10 @@ import type {
 } from '../shared/email';
 import type { EmailMessage, StoredEmail } from '../types/email';
 import { AccountDao } from './dao/AccountDao';
+import { EmailDao } from './dao/EmailDao';
+import { EmailFolderDao, type EmailFolderRow } from './dao/EmailFolderDao';
+import { readEml, removeEml, removeFolderDir, writeEml } from './email-filesystem';
+
 
 const CONNECTION_TIMEOUT_MS = 10_000;
 
@@ -156,6 +160,16 @@ export async function fetchEmails(request: FetchEmailsRequest = {}): Promise<Sto
    if (!Number.isInteger(limit) || limit < 1 || limit > 200) {
       throw new Error('The email limit must be a whole number between 1 and 200.');
    }
+   const beforeUID = request.beforeUID;
+   if (beforeUID !== undefined && (!Number.isInteger(beforeUID) || beforeUID < 1)) {
+      throw new Error('beforeUID must be a positive whole number.');
+   }
+
+   // Sets up the Email folders and begins assigning UUIDs
+   const folderDao = new EmailFolderDao();
+   const emailDao = new EmailDao();
+   let folder: EmailFolderRow;
+   let uidValidity: number;
 
    const client = createImapClient(account);
    let connected = false;
@@ -166,34 +180,66 @@ export async function fetchEmails(request: FetchEmailsRequest = {}): Promise<Sto
       try {
          const state = client.mailbox;
          if (!state) throw new Error(`The ${mailbox} mailbox could not be opened.`);
-         if (state.exists === 0) return [];
 
-         const firstSequence = Math.max(1, state.exists - limit + 1);
-         const fetched = await client.fetchAll(`${firstSequence}:*`, {
-            uid: true,
-            envelope: true,
-            flags: true,
-            internalDate: true,
-            size: true,
-            source: true,
-         });
-         const uidValidity = Number(state.uidValidity);
-         const emails = await Promise.all(fetched.map(async (item): Promise<StoredEmail> => {
-            if (!item.source) throw new Error(`The IMAP server did not return message source for UID ${item.uid}.`);
-            const parsed = await simpleParser(item.source);
-            return {
-               message: toEmailMessage(parsed, item.uid),
-               mailbox,
-               uid: item.uid,
-               uidValidity,
-               flags: item.flags ?? new Set<string>(),
-               ...(item.internalDate
-                  ? { internalDate: item.internalDate instanceof Date ? item.internalDate : new Date(item.internalDate) }
-                  : {}),
-               ...(item.size !== undefined ? { size: item.size } : {}),
-            };
-         }));
-         return emails.sort((left, right) => right.uid - left.uid);
+         // folder row and UIDVALIDITY check for all of the emails
+         folder = folderDao.getOrCreate(account.accountID, mailbox, state.delimiter || '/');
+         uidValidity = Number(state.uidValidity);
+         if (folder.uidValidity !== uidValidity) {
+            if (folder.uidValidity !== null) await removeFolderDir(folder.pathOnDisk);
+            folderDao.resetForUidValidity(folder.folderID, uidValidity);
+         }
+
+         // UID + flags for the whole folder, no bodies. Works on any IMAP server (no CONDSTORE/QRESYNC needed).
+         const serverFlags = new Map<number, Set<string>>();
+         if (state.exists > 0) {
+            for (const item of await client.fetchAll('1:*', { uid: true, flags: true })) {
+               serverFlags.set(item.uid, item.flags ?? new Set<string>());
+            }
+         }
+
+         // only the newest page reconciles deletes/moves-out and flag changes
+         if (!beforeUID) {
+            const removedFiles = emailDao.syncFolderState(folder.folderID, serverFlags);
+            await Promise.all(removedFiles.map((fileName) => removeEml(folder.pathOnDisk, fileName)));
+         }
+
+         // the `limit` newest UIDs below the cursor
+         const uids = [...serverFlags.keys()]
+            .filter((uid) => !beforeUID || uid < beforeUID)
+            .sort((a, b) => a - b)
+            .slice(-limit);
+
+         if (uids.length) {
+            // download only bodies that aren't saved yet
+            const stored = emailDao.storedUids(folder.folderID, uids[0]);
+            const missing = uids.filter((uid) => !stored.has(uid));
+
+            if (missing.length) {
+               const fetched = await client.fetchAll(
+                  missing.join(','),
+                  { uid: true, flags: true, size: true, source: true },
+                  { uid: true },
+               );
+
+               // then use the filesystem fucntions to write the file, then the row
+               for (const item of fetched) {
+                  if (!item.source) continue;
+                  const fileName = await writeEml(folder.pathOnDisk, item.uid, item.source);
+                  const parsed = await simpleParser(item.source);
+                  emailDao.insert({
+                     folderID: folder.folderID,
+                     uid: item.uid,
+                     fileName,
+                     message: toEmailMessage(parsed, item.uid),
+                     flags: item.flags ?? new Set<string>(),
+                     ...(item.size !== undefined ? { size: item.size } : {}),
+                     ...(parsed.text ? { snippet: parsed.text.slice(0, 200) } : {}),
+                     hasAttach: parsed.attachments.length > 0,
+                  });
+               }
+            }
+            if (!beforeUID) folderDao.markSynced(folder.folderID, uids[uids.length - 1]);
+         }
       } finally {
          lock.release();
       }
@@ -204,7 +250,26 @@ export async function fetchEmails(request: FetchEmailsRequest = {}): Promise<Sto
          client.close();
       }
    }
+
+   // return the saved copies
+   const rows = emailDao.listByFolder(folder.folderID, limit, beforeUID);
+   return Promise.all(rows.map(async (row): Promise<StoredEmail> => {
+      const parsed = await simpleParser(await readEml(folder.pathOnDisk, row.fileName));
+      const flags = new Set<string>();
+      if (row.isRead) flags.add('\\Seen');
+      if (row.isFlagged) flags.add('\\Flagged');
+      if (row.isAnswered) flags.add('\\Answered');
+      return {
+         message: toEmailMessage(parsed, row.uid),
+         mailbox,
+         uid: row.uid,
+         uidValidity,
+         flags,
+         ...(row.size !== null ? { size: row.size } : {}),
+      };
+   }));
 }
+
 
 export async function sendEmail(request: SendEmailRequest): Promise<SendEmailResult> {
    if (!request || !Array.isArray(request.to) || request.to.length === 0 ||
