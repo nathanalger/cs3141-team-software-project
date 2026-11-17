@@ -1,8 +1,10 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { generateSampleEmails } from '../../../../types/email';
 import type { Account, MailboxInfo } from '../../../../shared/email';
 import InboxPage from '../../pages/InboxPage';
+import ComposePage from '../../pages/ComposePage';
 
 const accounts: Account[] = [
    {
@@ -59,6 +61,17 @@ function installDesktop(overrides: DesktopMocks = {}) {
    return desktop;
 }
 
+function renderMailPages() {
+   return render(
+      <MemoryRouter initialEntries={['/inbox']}>
+         <Routes>
+            <Route path="/inbox" element={<InboxPage />} />
+            <Route path="/inbox/compose" element={<ComposePage />} />
+         </Routes>
+      </MemoryRouter>,
+   );
+}
+
 describe('InboxPage', () => {
    afterEach(() => {
       cleanup();
@@ -69,7 +82,7 @@ describe('InboxPage', () => {
       const emails = generateSampleEmails(1);
       const desktop = installDesktop({ fetchEmails: vi.fn().mockResolvedValue(emails) });
 
-      render(<InboxPage />);
+      renderMailPages();
 
       expect(await screen.findByText(emails[0].message.subject)).toBeTruthy();
       expect(desktop.fetchEmails).toHaveBeenCalledWith({ accountID: 1, mailbox: 'INBOX', limit: 50 });
@@ -79,7 +92,7 @@ describe('InboxPage', () => {
    it('switches accounts and fetches the selected account mailbox', async () => {
       const desktop = installDesktop();
 
-      render(<InboxPage />);
+      renderMailPages();
       await screen.findByRole('button', { name: 'Inbox' });
 
       fireEvent.change(screen.getByRole('combobox', { name: 'Select email account' }), {
@@ -95,7 +108,7 @@ describe('InboxPage', () => {
    it('switches between server-provided folders', async () => {
       const desktop = installDesktop();
 
-      render(<InboxPage />);
+      renderMailPages();
       await screen.findByRole('button', { name: 'Spam' });
       fireEvent.click(screen.getByRole('button', { name: 'Sent' }));
 
@@ -104,12 +117,13 @@ describe('InboxPage', () => {
       });
    });
 
-   it('sends a composed message through the selected account', async () => {
+   it('navigates to compose and sends a message through the selected account', async () => {
       const sendEmail = vi.fn().mockResolvedValue({ messageId: '<sent@example.com>' });
       installDesktop({ sendEmail });
 
-      render(<InboxPage />);
+      renderMailPages();
       fireEvent.click(await screen.findByRole('button', { name: 'Compose' }));
+      expect(await screen.findByRole('heading', { name: 'Compose email' })).toBeTruthy();
       fireEvent.change(screen.getByPlaceholderText('To: recipient@example.com (separate multiple with commas)'), {
          target: { value: 'first@example.com, second@example.com' },
       });
