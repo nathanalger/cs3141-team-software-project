@@ -1,4 +1,4 @@
-import { Help, Contacts, FormatPaint, Person, Inbox, Settings, BugReport } from '@mui/icons-material';
+import { Help, FormatPaint, Person, Inbox, Settings, BugReport, Email } from '@mui/icons-material';
 import { Box, Button } from '@mui/joy';
 import { useEffect, useState } from 'react';
 import { NAV_THICKNESS } from './MainWrapper';
@@ -26,9 +26,9 @@ const InboxSidebarItems: { slug: string; items: SidebarItem[] } = {
          icon: <Inbox />,
       },
       {
-         slug: '/inbox/contacts',
-         label: 'Contacts',
-         icon: <Contacts />,
+         slug: '/inbox/compose',
+         label: 'Compose',
+         icon: <Email />,
       },
       {
          slug: '/inbox/help',

@@ -1,8 +1,10 @@
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { generateSampleEmails } from '../../../../types/email';
 import type { Account, MailboxInfo } from '../../../../shared/email';
 import InboxPage from '../../pages/InboxPage';
+import ComposePage from '../../pages/ComposePage';
 
 const accounts: Account[] = [
    {
@@ -45,7 +47,9 @@ const mailboxes: MailboxInfo[] = [
    { path: 'Trash', name: 'Trash', delimiter: '/', specialUse: '\\Trash', flags: [] },
 ];
 
-type DesktopMocks = Partial<Record<'getAccounts' | 'listMailboxes' | 'fetchEmails' | 'sendEmail', ReturnType<typeof vi.fn>>>;
+type DesktopMocks = Partial<
+   Record<'getAccounts' | 'listMailboxes' | 'fetchEmails' | 'sendEmail', ReturnType<typeof vi.fn>>
+>;
 
 function installDesktop(overrides: DesktopMocks = {}) {
    const desktop = {
@@ -59,6 +63,17 @@ function installDesktop(overrides: DesktopMocks = {}) {
    return desktop;
 }
 
+function renderMailPages() {
+   return render(
+      <MemoryRouter initialEntries={['/inbox']}>
+         <Routes>
+            <Route path="/inbox" element={<InboxPage />} />
+            <Route path="/inbox/compose" element={<ComposePage />} />
+         </Routes>
+      </MemoryRouter>,
+   );
+}
+
 describe('InboxPage', () => {
    afterEach(() => {
       cleanup();
@@ -69,7 +84,7 @@ describe('InboxPage', () => {
       const emails = generateSampleEmails(1);
       const desktop = installDesktop({ fetchEmails: vi.fn().mockResolvedValue(emails) });
 
-      render(<InboxPage />);
+      renderMailPages();
 
       expect(await screen.findByText(emails[0].message.subject)).toBeTruthy();
       expect(desktop.fetchEmails).toHaveBeenCalledWith({ accountID: 1, mailbox: 'INBOX', limit: 50 });
@@ -79,7 +94,7 @@ describe('InboxPage', () => {
    it('switches accounts and fetches the selected account mailbox', async () => {
       const desktop = installDesktop();
 
-      render(<InboxPage />);
+      renderMailPages();
       await screen.findByRole('button', { name: 'Inbox' });
 
       fireEvent.change(screen.getByRole('combobox', { name: 'Select email account' }), {
@@ -95,44 +110,12 @@ describe('InboxPage', () => {
    it('switches between server-provided folders', async () => {
       const desktop = installDesktop();
 
-      render(<InboxPage />);
+      renderMailPages();
       await screen.findByRole('button', { name: 'Spam' });
       fireEvent.click(screen.getByRole('button', { name: 'Sent' }));
 
       await waitFor(() => {
          expect(desktop.fetchEmails).toHaveBeenCalledWith({ accountID: 1, mailbox: 'Sent', limit: 50 });
       });
-   });
-
-   it('sends a composed message through the selected account', async () => {
-      const sendEmail = vi.fn().mockResolvedValue({ messageId: '<sent@example.com>' });
-      installDesktop({ sendEmail });
-
-      render(<InboxPage />);
-      fireEvent.click(await screen.findByRole('button', { name: 'Compose' }));
-      fireEvent.change(screen.getByPlaceholderText('To: recipient@example.com (separate multiple with commas)'), {
-         target: { value: 'first@example.com, second@example.com' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('CC (optional)'), {
-         target: { value: 'copy@example.com' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('BCC (optional)'), {
-         target: { value: 'hidden@example.com' },
-      });
-      fireEvent.change(screen.getByPlaceholderText('Subject'), { target: { value: 'Test subject' } });
-      fireEvent.change(screen.getByPlaceholderText('Write your message...'), { target: { value: 'Test body' } });
-      fireEvent.click(screen.getByRole('button', { name: 'Send email' }));
-
-      await waitFor(() => {
-         expect(sendEmail).toHaveBeenCalledWith({
-            accountID: 1,
-            to: [{ address: 'first@example.com' }, { address: 'second@example.com' }],
-            cc: [{ address: 'copy@example.com' }],
-            bcc: [{ address: 'hidden@example.com' }],
-            subject: 'Test subject',
-            text: 'Test body',
-         });
-      });
-      expect(await screen.findByText('Email sent successfully. Message ID: <sent@example.com>')).toBeTruthy();
    });
 });

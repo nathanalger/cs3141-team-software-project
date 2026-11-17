@@ -1,9 +1,10 @@
-import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
-import { Alert, Box, Button, CircularProgress, Input, Textarea, Typography } from '@mui/joy';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Alert, Box, Button, CircularProgress, Typography } from '@mui/joy';
+import { useNavigate } from 'react-router-dom';
 import EmailGrid from '../components/EmailGrid';
 import EmailRenderer from '../components/EmailRenderer';
 import type { StoredEmail } from '../../../types/email';
-import type { Account, EmailAddress, FetchEmailsRequest, MailboxInfo, SendEmailRequest } from '../../../shared/email';
+import type { Account, FetchEmailsRequest, MailboxInfo } from '../../../shared/email';
 import { useSettings } from '../hooks/useSettings';
 import Section from '../components/Section';
 import { getSettingKey } from '../../../types/settings';
@@ -62,14 +63,6 @@ function normalizeEmails(emails: StoredEmail[]): StoredEmail[] {
    }));
 }
 
-function parseAddresses(value: string): EmailAddress[] {
-   return value
-      .split(/[;,]/)
-      .map((address) => address.trim())
-      .filter(Boolean)
-      .map((address) => ({ address }));
-}
-
 function errorText(cause: unknown, fallback: string): string {
    return cause instanceof Error ? cause.message : fallback;
 }
@@ -85,20 +78,14 @@ const InboxPage = () => {
    const [openedEmail, setOpenedEmail] = useState<StoredEmail | undefined>(undefined);
    const [loading, setLoading] = useState(false);
    const [error, setError] = useState<string>();
-   const [composeOpen, setComposeOpen] = useState(false);
-   const [recipients, setRecipients] = useState('');
-   const [ccRecipients, setCcRecipients] = useState('');
-   const [bccRecipients, setBccRecipients] = useState('');
-   const [subject, setSubject] = useState('');
-   const [body, setBody] = useState('');
-   const [sending, setSending] = useState(false);
-   const [sendStatus, setSendStatus] = useState<string>();
    const fetchRequestID = useRef(0);
    const { values } = useSettings();
+   const navigate = useNavigate();
 
    useEffect(() => {
       let active = true;
-      window.desktop.getAccounts()
+      window.desktop
+         .getAccounts()
          .then((loadedAccounts) => {
             if (!active) return;
             setAccounts(loadedAccounts);
@@ -127,7 +114,8 @@ const InboxPage = () => {
       setMailboxesLoading(true);
       setMailboxes([INBOX_FALLBACK]);
       setSelectedMailbox('INBOX');
-      window.desktop.listMailboxes(selectedAccountID)
+      window.desktop
+         .listMailboxes(selectedAccountID)
          .then((loadedMailboxes) => {
             if (!active) return;
             const withInbox = loadedMailboxes.some((mailbox) => mailbox.path.toUpperCase() === 'INBOX')
@@ -189,7 +177,6 @@ const InboxPage = () => {
       setOpenedEmail(undefined);
       setMessages([]);
       setError(undefined);
-      setSendStatus(undefined);
    };
 
    const selectMailbox = (mailbox: string) => {
@@ -197,39 +184,6 @@ const InboxPage = () => {
       setOpenedEmail(undefined);
       setMessages([]);
       setError(undefined);
-   };
-
-   const send = async (event: FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      if (selectedAccountID === undefined) return;
-      setSending(true);
-      setSendStatus(undefined);
-      setError(undefined);
-      try {
-         const to = parseAddresses(recipients);
-         const cc = parseAddresses(ccRecipients);
-         const bcc = parseAddresses(bccRecipients);
-         const request: SendEmailRequest = {
-            accountID: selectedAccountID,
-            to,
-            ...(cc.length ? { cc } : {}),
-            ...(bcc.length ? { bcc } : {}),
-            subject,
-            text: body,
-         };
-         const result = await window.desktop.sendEmail(request);
-         setSendStatus(`Email sent successfully. Message ID: ${result.messageId}`);
-         setRecipients('');
-         setCcRecipients('');
-         setBccRecipients('');
-         setSubject('');
-         setBody('');
-         setComposeOpen(false);
-      } catch (cause) {
-         setError(errorText(cause, 'Unable to send email.'));
-      } finally {
-         setSending(false);
-      }
    };
 
    const showPreview = values[getSettingKey('inbox', 'message-list', 'show-preview')] !== false;
@@ -241,7 +195,9 @@ const InboxPage = () => {
       <PageWrapper>
          <Section>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-               <Typography level="h2" sx={{ flex: 1, minWidth: '120px' }}>Mail</Typography>
+               <Typography level="h2" sx={{ flex: 1, minWidth: '120px' }}>
+                  Mail
+               </Typography>
                <Typography level="body-sm">Account</Typography>
                <select
                   aria-label="Select email account"
@@ -264,10 +220,18 @@ const InboxPage = () => {
                      </option>
                   ))}
                </select>
-               <Button onClick={() => setComposeOpen((open) => !open)} disabled={!selectedAccount || !selectedAccount.smtpHost}>
-                  {composeOpen ? 'Close compose' : 'Compose'}
+               <Button
+                  onClick={() => navigate('/inbox/compose', { state: { accountID: selectedAccountID } })}
+                  disabled={!selectedAccount || !selectedAccount.smtpHost}
+               >
+                  Compose
                </Button>
-               <Button variant="outlined" onClick={() => void loadInbox()} loading={loading} disabled={!selectedAccount}>
+               <Button
+                  variant="outlined"
+                  onClick={() => void loadInbox()}
+                  loading={loading}
+                  disabled={!selectedAccount}
+               >
                   Refresh
                </Button>
             </Box>
@@ -277,66 +241,10 @@ const InboxPage = () => {
                   No email accounts are configured. Add an account in Settings before using the inbox.
                </Alert>
             )}
-            {error && <Alert color="danger" sx={{ mb: 2 }}>{error}</Alert>}
-            {sendStatus && <Alert color="success" sx={{ mb: 2 }}>{sendStatus}</Alert>}
-
-            {composeOpen && (
-               <Box
-                  component="form"
-                  onSubmit={send}
-                  sx={{
-                     display: 'flex',
-                     flexDirection: 'column',
-                     gap: 1,
-                     mb: 3,
-                     p: 2,
-                     border: '1px solid',
-                     borderColor: 'divider',
-                     borderRadius: 'sm',
-                  }}
-               >
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                     <Typography level="title-lg" sx={{ flex: 1 }}>New email</Typography>
-                     <Typography level="body-xs" color="neutral">
-                        Sending from {selectedAccount?.email}
-                     </Typography>
-                  </Box>
-                  <Input
-                     required
-                     type="text"
-                     placeholder="To: recipient@example.com (separate multiple with commas)"
-                     value={recipients}
-                     onChange={(event) => setRecipients(event.target.value)}
-                  />
-                  <Input
-                     type="text"
-                     placeholder="CC (optional)"
-                     value={ccRecipients}
-                     onChange={(event) => setCcRecipients(event.target.value)}
-                  />
-                  <Input
-                     type="text"
-                     placeholder="BCC (optional)"
-                     value={bccRecipients}
-                     onChange={(event) => setBccRecipients(event.target.value)}
-                  />
-                  <Input required placeholder="Subject" value={subject} onChange={(event) => setSubject(event.target.value)} />
-                  <Textarea
-                     required
-                     minRows={8}
-                     placeholder="Write your message..."
-                     value={body}
-                     onChange={(event) => setBody(event.target.value)}
-                  />
-                  <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
-                     <Button type="button" variant="plain" color="neutral" onClick={() => setComposeOpen(false)}>
-                        Discard
-                     </Button>
-                     <Button type="submit" loading={sending} disabled={sending || !selectedAccount}>
-                        Send email
-                     </Button>
-                  </Box>
-               </Box>
+            {error && (
+               <Alert color="danger" sx={{ mb: 2 }}>
+                  {error}
+               </Alert>
             )}
 
             <Box sx={{ display: 'flex', minHeight: 420, gap: 2, alignItems: 'stretch' }}>
@@ -355,7 +263,9 @@ const InboxPage = () => {
                         pr: 1,
                      }}
                   >
-                     <Typography level="title-sm" sx={{ px: 1, pb: 0.5 }}>Folders</Typography>
+                     <Typography level="title-sm" sx={{ px: 1, pb: 0.5 }}>
+                        Folders
+                     </Typography>
                      {mailboxesLoading && <CircularProgress size="sm" sx={{ alignSelf: 'center', my: 1 }} />}
                      {mailboxes.map((mailbox) => (
                         <Button
@@ -374,7 +284,9 @@ const InboxPage = () => {
 
                <Box sx={{ flex: 1, minWidth: 0 }}>
                   {loading && messages.length === 0 ? (
-                     <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress /></Box>
+                     <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+                        <CircularProgress />
+                     </Box>
                   ) : openedEmail ? (
                      <EmailRenderer email={openedEmail} onBack={() => setOpenedEmail(undefined)} />
                   ) : (

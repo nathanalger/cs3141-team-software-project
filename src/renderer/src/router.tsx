@@ -2,6 +2,7 @@ import { createMemoryRouter, Navigate, Outlet } from 'react-router-dom';
 import MainWrapper from './architecture/MainWrapper';
 import InboxPage from './pages/InboxPage';
 import SettingsPage from './pages/Settings';
+import ComposePage from './pages/ComposePage';
 
 /**
  * When adding or changing pages, reflect changes in:
@@ -24,7 +25,7 @@ export const router = createMemoryRouter([
             element: <Outlet />,
             children: [
                { index: true, element: <InboxPage /> },
-               { path: 'contacts', element: <></> },
+               { path: 'compose', element: <ComposePage /> },
                { path: 'help', element: <></> },
             ],
          },
