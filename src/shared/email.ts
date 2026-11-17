@@ -75,6 +75,8 @@ export interface FetchEmailsRequest {
    accountID?: number;
    mailbox?: string;
    limit?: number;
+   /** Return the page of messages with UIDs below this one. Omit for the newest page. */
+   beforeUID?: number;
 }
 
 export interface SendEmailRequest {

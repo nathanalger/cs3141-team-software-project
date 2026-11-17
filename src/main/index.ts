@@ -6,6 +6,7 @@ import { readSettings, writeSetting } from './settings';
 import { fetchEmails, listMailboxes, sendEmail, testMailConnections } from './mail-service';
 import { init as initializeDatabase } from './db';
 import { AccountDao } from './dao/AccountDao';
+import { init as initMailStore } from './email-filesystem';
 import type { AccountInput, AccountUpdateInput, FetchEmailsRequest, SendEmailRequest } from '../shared/email';
 
 app.on('render-process-gone', (_event, _webContents, details) => {
@@ -154,6 +155,7 @@ function createWindow() {
 app.whenReady()
    .then(() => {
       initializeDatabase();
+      initMailStore();
       createWindow();
 
       app.on('activate', () => {
