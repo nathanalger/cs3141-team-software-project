@@ -1,9 +1,10 @@
 import { useEffect, useState, type FormEvent } from 'react';
-import { Alert, Box, Button, Input, Textarea, Typography } from '@mui/joy';
+import { Alert, Box, Button, Input, Typography } from '@mui/joy';
 import { useLocation, useNavigate } from 'react-router-dom';
 import type { Account, EmailAddress, SendEmailRequest } from '../../../shared/email';
 import PageWrapper from '../architecture/PageWrapper';
 import Section from '../components/Section';
+import EmailEditor from '../components/EmailEditor';
 
 function parseAddresses(value: string): EmailAddress[] {
    return value
@@ -28,6 +29,8 @@ const ComposePage = () => {
    const [bccRecipients, setBccRecipients] = useState('');
    const [subject, setSubject] = useState('');
    const [body, setBody] = useState('');
+   const [bodyHtml, setBodyHtml] = useState('');
+   const [editorKey, setEditorKey] = useState(0);
    const [sending, setSending] = useState(false);
    const [error, setError] = useState<string>();
    const [sendStatus, setSendStatus] = useState<string>();
@@ -68,6 +71,10 @@ const ComposePage = () => {
    const send = async (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
       if (selectedAccountID === undefined) return;
+      if (!body.trim()) {
+         setError('Write a message before sending.');
+         return;
+      }
       setSending(true);
       setError(undefined);
       setSendStatus(undefined);
@@ -82,6 +89,7 @@ const ComposePage = () => {
             ...(bcc.length ? { bcc } : {}),
             subject,
             text: body,
+            html: bodyHtml,
          };
          const result = await window.desktop.sendEmail(request);
          setSendStatus(`Email sent successfully. Message ID: ${result.messageId}`);
@@ -90,6 +98,8 @@ const ComposePage = () => {
          setBccRecipients('');
          setSubject('');
          setBody('');
+         setBodyHtml('');
+         setEditorKey((key) => key + 1);
       } catch (cause) {
          setError(errorText(cause, 'Unable to send email.'));
       } finally {
@@ -184,12 +194,12 @@ const ComposePage = () => {
                   value={subject}
                   onChange={(event) => setSubject(event.target.value)}
                />
-               <Textarea
-                  required
-                  minRows={8}
-                  placeholder="Write your message..."
-                  value={body}
-                  onChange={(event) => setBody(event.target.value)}
+               <EmailEditor
+                  key={editorKey}
+                  onChange={(text, html) => {
+                     setBody(text);
+                     setBodyHtml(html);
+                  }}
                />
                <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1 }}>
                   <Button type="button" variant="plain" color="neutral" onClick={() => navigate('/inbox')}>

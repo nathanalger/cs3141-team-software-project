@@ -47,7 +47,9 @@ const mailboxes: MailboxInfo[] = [
    { path: 'Trash', name: 'Trash', delimiter: '/', specialUse: '\\Trash', flags: [] },
 ];
 
-type DesktopMocks = Partial<Record<'getAccounts' | 'listMailboxes' | 'fetchEmails' | 'sendEmail', ReturnType<typeof vi.fn>>>;
+type DesktopMocks = Partial<
+   Record<'getAccounts' | 'listMailboxes' | 'fetchEmails' | 'sendEmail', ReturnType<typeof vi.fn>>
+>;
 
 function installDesktop(overrides: DesktopMocks = {}) {
    const desktop = {
@@ -134,7 +136,6 @@ describe('InboxPage', () => {
          target: { value: 'hidden@example.com' },
       });
       fireEvent.change(screen.getByPlaceholderText('Subject'), { target: { value: 'Test subject' } });
-      fireEvent.change(screen.getByPlaceholderText('Write your message...'), { target: { value: 'Test body' } });
       fireEvent.click(screen.getByRole('button', { name: 'Send email' }));
 
       await waitFor(() => {

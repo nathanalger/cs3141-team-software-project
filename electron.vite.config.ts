@@ -24,10 +24,11 @@ export default defineConfig({
       publicDir: resolve(import.meta.dirname, 'src/renderer/src/public'),
       plugins: [react()],
       resolve: {
-         dedupe: ['react', 'react-dom'],
+         dedupe: ['react', 'react-dom', 'lexical'],
          alias: [
             { find: /^react$/, replacement: resolve(import.meta.dirname, 'node_modules/react/index.js') },
             { find: /^react-dom$/, replacement: resolve(import.meta.dirname, 'node_modules/react-dom/index.js') },
+            { find: /^lexical$/, replacement: resolve(import.meta.dirname, 'node_modules/lexical') },
             { find: '@', replacement: resolve(import.meta.dirname, 'src/renderer/src') },
          ],
       },
