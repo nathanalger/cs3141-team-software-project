@@ -18,6 +18,7 @@
       "preview": "electron-vite preview",
       "package": "deno task build && electron-builder",
       "test": "vitest run",
+      "test:backend": "vitest run --config vitest.backend.config.ts",
       "test:watch": "vitest"
    },
    "allowScripts": {

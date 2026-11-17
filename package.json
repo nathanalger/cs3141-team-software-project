@@ -9,7 +9,8 @@
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "electron_fix": "node ./node_modules/electron/install.js"
+    "electron_fix": "node ./node_modules/electron/install.js",
+    "test:backend": "vitest run --config vitest.backend.config.ts"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
